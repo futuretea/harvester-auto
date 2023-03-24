@@ -1,0 +1,98 @@
+# harvester-auto
+
+Bootstrap a Harvester Cluster with a single slack command.
+
+## Features
+
+- [x] Auto-Deploy
+  - [x] Auto-Download-Release
+  - [x] Auto-Build-ISO
+      - [x] Multi-Repo
+      - [x] Multi-Branch
+- [x] Multi-User
+- [x] Multi-Cluster
+  - [x] Multi-Node-Per-Cluster
+    - [x] Multi-Disk-Per-Node
+    - [x] Multi-NIC-Per-Node
+
+## Environment Requirements
+
+### Ubuntu
+
+#### vagrant-libvirt
+```bash
+sudo apt purge vagrant-libvirt
+sudo apt-mark hold vagrant-libvirt
+sudo apt update
+sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
+```
+
+#### ansible
+```bash
+sudo apt install -y ansible
+pip install jinja2-cli
+````
+
+#### docker
+```bash
+curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
+sudo systemctl enable --now docker
+```
+
+#### nginx
+```bash
+sudo apt install -y nginx
+sudo systemctl enable --now nginx
+```
+You can use the default nginx configuration or use the custom one `configs/nginx.conf`
+
+#### Harbor (Optional)
+- Refer to the documentation https://goharbor.io/ to install Harbor
+- create a `rancher` project
+
+## Usage example
+
+### Preparing your Slack App
+
+Refer to https://github.com/shomali11/slacker#preparing-your-slack-app
+
+### Docker Login
+
+#### Option 1: Harbor
+```bash
+docker login <Harbor domain/ip:port>
+```
+Adjust the `default_image_repo` in the `./scripts/_config.sh` to `<Harbor domain/ip:port>/rancher`
+
+#### Option 2: Docker Hub
+```bash
+docker login
+```
+Adjust the `default_image_repo` in the `./scripts/_config.sh` to `<dockerhub username>`
+
+### Build
+```bash
+git clone https://github.com/futuretea/harvester-auto.git
+cd harvester-auto
+make
+mv ./bin/harvester-auto .
+```
+
+### Configuration
+```bash
+cd configs
+cp config.yaml.example config.yaml
+vim config.yaml
+cd -
+```
+
+### Run
+```bash
+./harvester-auto
+```
+
+### Send commands from slack
+
+Send `help` to the Slack app to get the help message
+
+![help.png](./asserts/help.png)

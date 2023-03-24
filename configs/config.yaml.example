@@ -1,0 +1,6 @@
+slack:
+  bot_token: <bot_token>
+  app_token: <app_token>
+  users:
+    <slack username 1>: 1
+    <slack username 2>: 2

@@ -1,0 +1,6 @@
+.dapper
+.idea
+.vscode
+harvester-auto
+config.yaml
+vendor

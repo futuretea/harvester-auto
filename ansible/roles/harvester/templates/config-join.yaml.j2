@@ -1,0 +1,26 @@
+# example from https://github.com/harvester/ipxe-examples/blob/main/general/config-join.yaml
+
+scheme_version: 1
+server_url: https://{{ settings['harvester_network_config']['vip']['ip'] }}:443
+token: {{ settings['harvester_config']['token'] }}
+os:
+  hostname: {{ hostname }}
+  ssh_authorized_keys:
+{% for ssh_key in settings['harvester_config']['ssh_authorized_keys'] %}
+    - {{ ssh_key }}
+{% endfor %}
+  password: {{ settings['harvester_config']['password'] }}
+  ntp_servers:
+{% for ntp_server in settings['harvester_config']['ntp_servers'] %}
+    - {{ ntp_server }}
+{% endfor %}
+install:
+  mode: join
+  management_interface:
+    interfaces:
+    - name: {{ mgmt_interface_name }}  # The management interface name
+    method: dhcp
+  device: /dev/vda       # The target disk to install
+  iso_url: http://{{ pxe_server_ip }}/harvester/harvester-amd64.iso
+#  tty: ttyS1,115200n8   # For machines without a VGA console
+  tty: ttyS0
