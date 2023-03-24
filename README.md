@@ -4,16 +4,20 @@ Bootstrap a Harvester Cluster with a single slack command.
 
 ## Features
 
-- [x] Auto-Deploy
-  - [x] Auto-Download-Release
-  - [x] Auto-Build-ISO
-      - [x] Multi-Repo
-      - [x] Multi-Branch
 - [x] Multi-User
 - [x] Multi-Cluster
   - [x] Multi-Node-Per-Cluster
     - [x] Multi-Disk-Per-Node
     - [x] Multi-NIC-Per-Node
+- [x] Auto-Download-Release
+- [x] Auto-Build-ISO
+    - [x] Multi-Repo
+    - [x] Multi-Branch
+- [x] Auto-Deploy
+- [ ] Auto-Notification
+- [ ] Auto-Patch-Image
+- [ ] Auto-Power-Management
+
 
 ## Environment Requirements
 
