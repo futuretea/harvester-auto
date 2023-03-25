@@ -23,7 +23,7 @@ Bootstrap a Harvester Cluster with a single slack command.
 
 ### Ubuntu
 
-#### vagrant-libvirt
+#### Vagrant Libvirt
 ```bash
 sudo apt purge vagrant-libvirt
 sudo apt-mark hold vagrant-libvirt
@@ -31,13 +31,13 @@ sudo apt update
 sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
 ```
 
-#### docker
+#### Docker
 ```bash
 curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
 sudo systemctl enable --now docker
 ```
 
-#### nginx
+#### Nginx
 Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files under `/var/www/html`.
 ```bash
 sudo apt install -y nginx
@@ -51,7 +51,7 @@ Since the Harvester nodes created use a private network, all are only accessible
 sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
 ```
 
-#### tools
+#### Tools
 ```bash
 sudo apt install -y ansible sshpass
 sudo pip install jinja2-cli
@@ -131,6 +131,7 @@ sudo systemctl enable --now harvester-auto
 
 ### Update
 ```bash
+git pull
 make
 sudo systemctl stop harvester-auto
 mv ./bin/harvester-auto .
