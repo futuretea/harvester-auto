@@ -18,6 +18,9 @@ Bootstrap a Harvester Cluster with a single slack command.
 - [ ] Auto-Patch-Image
 - [ ] Auto-Power-Management
 
+## Architecture
+
+![architecture](./asserts/architecture.png)
 
 ## Environment Requirements
 
