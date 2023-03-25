@@ -217,7 +217,7 @@ func main() {
 				clusterNotSetReply(botCtx, response)
 				return
 			}
-			lineNumber := request.IntegerParam("lineNumber", 10)
+			lineNumber := request.IntegerParam("lineNumber", 20)
 			bashCommand := fmt.Sprintf("./tail.sh %d %d %d", userID, clusterID, lineNumber)
 			shell2Reply(botCtx, response, bashCommand)
 		},
