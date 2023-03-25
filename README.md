@@ -123,4 +123,33 @@ sudo systemctl start harvester-auto
 
 Send `help` to the Slack app to get the help message
 
-![help.png](./asserts/help.png)
+#### Commands
+- help - help
+- hi - Hi!
+  > Example: hi
+- ping - Ping! `*`
+  > Example: ping
+- pr2c `harvesterPRs` `harvesterInstallerPRs` - Create Harvester cluster after merge PR `*`
+  > Example: pr2c 3670 0
+- v2c `harvesterVersion` - Create Harvester cluster after download ISO *
+  > Example: v2c v1.1
+- url - Show Harvester cluster url `*`
+  > Example: url
+- tail `lineNumber` - Tail Harvester cluster logs `*`
+  > Example: tail
+  > Example: tail 100
+- version - Show Harvester version `*`
+  > Example: version
+- kubeconfig - Show Harvester cluster kubeconfig content `*`
+  > Example: kubeconfig
+- destroy - Destroy Harvester cluster nodes `*`
+  > Example: destroy
+- virsh command args - virsh command warpper `*`
+  > Example: virsh list
+- ps - Show Harvester cluster status `*`
+  > Example: ps
+- cluster `clusterID` - Show/Set Current Harvester cluster `*`
+  > Example: cluster (show current cluster id)
+  > Example: cluster 1 (set current cluster id to 1)
+
+`* Authorized users only`
