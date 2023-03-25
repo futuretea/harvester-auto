@@ -31,8 +31,13 @@ workspace="${workspace_cluster}/harvester-auto"
 
 # check exist
 if [[ -d "${workspace}/.vagrant" ]];then
-   printf "cluster %d already exist\n" "${cluster_id}"
-   exit 0
+   printf "destroy existing cluster %d\n" "${cluster_id}"
+  if [[ -d "${workspace}/.vagrant" ]]; then
+    cd "${workspace}"
+    vagrant destroy -f
+    cd -
+    rm -rf "${workspace_cluster}"
+  fi
 fi
 
 # create
