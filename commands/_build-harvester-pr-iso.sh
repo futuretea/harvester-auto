@@ -62,7 +62,7 @@ else
   make build-iso
 fi
 
-output_dir="${iso_output_dir}/${harvester_prs//,/-}-${installer_prs//,/-}/master"
+output_dir="${iso_output_dir}/harvester/${harvester_prs//,/-}-${installer_prs//,/-}/master"
 mkdir -p "${output_dir}"
 mv ./dist/artifacts/* "${output_dir}/"
 rm -rf "${TEMPDIR}"
