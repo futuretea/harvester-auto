@@ -38,11 +38,11 @@ sudo systemctl enable --now docker
 ```
 
 #### nginx
+Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files under `/var/www/html`.
 ```bash
 sudo apt install -y nginx
 sudo systemctl enable --now nginx
 ```
-You can use the default nginx configuration or use the custom one `configs/nginx.conf`
 
 #### Proxy
 Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
@@ -58,9 +58,14 @@ sudo pip install jinja2-cli
 sudo snap install yq
 ````
 
-#### Harbor (Optional)
+#### Harbor (Optional, you can use docker hub or registry instead)
 - Refer to the documentation https://goharbor.io/ to install Harbor
 - create a `rancher` project
+- docker login
+```bash
+docker login <Harbor domain/ip:port>
+```
+Adjust the `default_image_repo` in the `./commands/_config.sh` to `<Harbor domain/ip:port>/rancher`. It defaults to `127.0.0.1:88/rancher`.
 
 ## Usage example
 
@@ -68,34 +73,32 @@ sudo snap install yq
 
 Refer to https://github.com/shomali11/slacker#preparing-your-slack-app
 
-### Docker Login
-
-#### Option 1: Harbor
-```bash
-docker login <Harbor domain/ip:port>
-```
-Adjust the `default_image_repo` in the `./scripts/_config.sh` to `<Harbor domain/ip:port>/rancher`
-
-#### Option 2: Docker Hub
-```bash
-docker login
-```
-Adjust the `default_image_repo` in the `./scripts/_config.sh` to `<dockerhub username>`
-
-### Build
+### Clone
 ```bash
 git clone https://github.com/futuretea/harvester-auto.git
 cd harvester-auto
-make
-mv ./bin/harvester-auto .
 ```
 
-### Configuration
+### Configure
+Fill in the Slack app token and user configurations in `./configs/config.yaml`
 ```bash
 cd configs
 cp config.yaml.example config.yaml
 vim config.yaml
 cd -
+```
+
+You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
+```bash
+sudo cp configs/ngxin.conf /etc/nginx/nginx.conf
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### Build
+```bash
+make
+mv ./bin/harvester-auto .
 ```
 
 ### Run for testing
