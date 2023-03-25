@@ -38,7 +38,7 @@ fi
 # create
 mkdir -p "${workspace_cluster}"
 cd "${workspace_cluster}"
-git clone "${git_repo_url}"
+git clone -b "${git_repo_branch}" "${git_repo_url}"
 cd "${git_repo_name}"
 jinja2 settings.yml.j2 \
     -D harvester_url=${harvester_url} \

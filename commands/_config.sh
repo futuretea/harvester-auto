@@ -2,6 +2,7 @@
 workspace_root="/workspace"
 logs_dir="/workspace/logs"
 git_repo_name="harvester-auto"
+git_repo_branch="master"
 git_repo_url="https://github.com/futuretea/harvester-auto"
 iso_output_dir="/var/www/html/harvester"
 local_iso_download_url="http://127.0.0.1/harvester"
