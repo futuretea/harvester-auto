@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"os/exec"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/shomali11/slacker"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type Slack struct {
