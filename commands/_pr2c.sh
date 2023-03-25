@@ -34,4 +34,5 @@ export REPO=${REPO:-"${default_image_repo}"}
 
 bash -x ./_build-harvester-pr-iso.sh "${harvester_prs}" "${installer_prs}"
 
-bash -x ./_create-harvester.sh "${local_iso_download_url}/${harvester_prs//,/-}-${installer_prs//,/-}" master "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+host_ip=$(hostname -I | awk '{print $1}')
+bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${harvester_prs//,/-}-${installer_prs//,/-}" master "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
