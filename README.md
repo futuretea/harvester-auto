@@ -22,7 +22,7 @@ Bootstrap a Harvester Cluster with a single slack command.
 
 ![architecture](./asserts/architecture.png)
 
-## Environment Requirements
+## Environment
 
 ### Ubuntu
 
@@ -70,7 +70,7 @@ docker login <Harbor domain/ip:port>
 ```
 Adjust the `default_image_repo` in the `./commands/_config.sh` to `<Harbor domain/ip:port>/rancher`. It defaults to `127.0.0.1:88/rancher`.
 
-## Usage example
+## Usage
 
 ### Preparing your Slack App
 
