@@ -26,7 +26,7 @@ replace_installer_prs() {
 }
 
 if [[ ${installer_prs} != "0" ]];then
-  replace_installer_prs build-iso-with-pr.sh.tpl "${TEMPDIR}/build-iso-with-pr"
+  replace_installer_prs _build-iso-with-pr.sh.tpl "${TEMPDIR}/build-iso-with-pr"
 fi
 
 cd "${TEMPDIR}"
@@ -35,12 +35,17 @@ git clone https://github.com/harvester/harvester.git
 cd harvester
 
 if [[ ${harvester_prs} != "0" ]];then
-  git checkout -b pr-"${harvester_prs//,/-}"-"${installer_prs//,/-}"
   IFS=',' read -ra harvester_prs_arr <<< "${harvester_prs}"
-  for i in "${harvester_prs_arr[@]}"; do
-    git fetch origin "pull/${i}/head:pr-${i}"
-    GIT_MERGE_AUTOEDIT=no git merge "pr-${i}"
-  done
+  if [[ ${#harvester_prs_arr[@]} -eq 1 ]]; then
+    git fetch origin "pull/${harvester_prs}/head:pr-${harvester_prs}"
+    git checkout "pr-${harvester_prs}"
+  else
+    git checkout -b "pr-${harvester_prs//,/-}-${installer_prs//,/-}"
+    for i in "${harvester_prs_arr[@]}"; do
+      git fetch origin "pull/${i}/head:pr-${i}"
+      GIT_MERGE_AUTOEDIT=no git merge "pr-${i}"
+    done
+  fi
   export REPO=${REPO}
   export PUSH=true
   if [[ ! -d ".docker" ]];then
