@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    create-harvester.sh harvester_url harvester_version node_number user_id cluster_id cpu_count memory_size disk_size
+    create-harvester.sh harvester_url harvester_version node_number user_id cluster_id cpu_count memory_size disk_size harvester_config_url
     create-harvester.sh https://releases.rancher.com/harvester master 2 1 1 8 16384 150G
 HELP
 }
@@ -23,6 +23,7 @@ cluster_id=$5
 cpu_count=$6
 memory_size=$7
 disk_size=$8
+harvester_config_url=$9
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
@@ -48,6 +49,7 @@ cd "${git_repo_name}"
 jinja2 settings.yml.j2 \
     -D harvester_url=${harvester_url} \
     -D harvester_version=${harvester_version} \
+    -D harvester_config_url=${harvester_config_url} \
     -D node_number=${node_number} \
     -D user_id=${user_id} \
     -D cluster_id=${cluster_id} \

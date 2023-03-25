@@ -156,17 +156,18 @@ func main() {
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			harvesterPRs := request.StringParam("harvesterPRs", "0")
 			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
 			clusterID := getClusterID(userID)
 			if clusterID == 0 {
 				clusterNotSetReply(botCtx, response)
 				return
 			}
-			bashCommand := fmt.Sprintf("./pr2c.sh %s %s %d %d", harvesterPRs, harvesterInstallerPRs, userID, clusterID)
+			bashCommand := fmt.Sprintf("./pr2c.sh %s %s %d %d %s", harvesterPRs, harvesterInstallerPRs, userID, clusterID, harvesterConfigURL)
 			shell2Reply(botCtx, response, bashCommand)
 		},
 	}
-	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs}", pr2cDefinition)
+	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
 
 	// command v2c
 	v2cDefinition := &slacker.CommandDefinition{
@@ -175,17 +176,18 @@ func main() {
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			harvesterVersion := request.StringParam("harvesterVersion", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
 			clusterID := getClusterID(userID)
 			if clusterID == 0 {
 				clusterNotSetReply(botCtx, response)
 				return
 			}
-			bashCommand := fmt.Sprintf("./v2c.sh %s %d %d", harvesterVersion, userID, clusterID)
+			bashCommand := fmt.Sprintf("./v2c.sh %s %d %d %s", harvesterVersion, userID, clusterID, harvesterConfigURL)
 			shell2Reply(botCtx, response, bashCommand)
 		},
 	}
-	bot.Command("v2c {harvesterVersion}", v2cDefinition)
+	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
 
 	// command url
 	urlDefinition := &slacker.CommandDefinition{
