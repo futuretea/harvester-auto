@@ -18,7 +18,59 @@
     hostname: "harvester-{{ settings['harvester_cluster']['name_suffix'] }}-0"
     mgmt_interface_name: "{{ settings['harvester_network_config']['cluster'][0]['mgmt_interface'] }}"
     pxe_server_ip: "{{ pxe_server_ip }}"
-# NOTE(gyee): Ansible pre-process the with_sequence variable so we have to
+
+- name: fetch config-create.yaml
+  fetch:
+    src: /var/www/harvester/config-create.yaml
+    dest: fetched/config-create.yaml
+    flat: yes
+
+- name: set config-create content fact
+  set_fact:
+    config_create_content: "{{ lookup('file', 'fetched/config-create.yaml') }}"
+
+- name: Get additional harvester config from URL
+  uri:
+    url: "{{ settings['harvester_config']['additional_content_url'] }}"
+    validate_certs: no
+    return_content: yes
+  register: additional_config_content
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+- name: save additional harvester config
+  copy:
+    content: "{{ additional_config_content.content }}"
+    dest: /var/www/harvester/config-additional.yaml
+    owner: www-data
+    mode: 0640
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+- name: fetch config-additional.yaml
+  fetch:
+    src: /var/www/harvester/config-additional.yaml
+    dest: fetched/config-additional.yaml
+    flat: yes
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+- name: merge create config
+  copy:
+    content: "{{ dict1 | combine(dict2, recursive=true) | to_nice_yaml }}"
+    dest: /var/www/harvester/config-create.yaml
+    owner: www-data
+    mode: 0640
+  vars:
+    dict1: "{{ config_create_content | from_yaml }}"
+    dict2: "{{ additional_config_content.content | from_yaml }}"
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+- name: fetch config-create.yaml again
+  fetch:
+    src: /var/www/harvester/config-create.yaml
+    dest: fetched/config-create-merge.yaml
+    flat: yes
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+# NOTE(gyee): Ansible pre-process the with_sequence variable, so we have to
 # make sure end sequence is at least 1 even if we have only one Harvester node
 - name: set node sequence fact
   set_fact:
@@ -35,6 +87,38 @@
     mgmt_interface_name: "{{ settings['harvester_network_config']['cluster'][item|int]['mgmt_interface'] }}"
     pxe_server_ip: "{{ pxe_server_ip }}"
   with_sequence: "start=1 end={{ end_sequence }}"
+
+- name: fetch config-join.yaml
+  fetch:
+    src: "/var/www/harvester/config-join-{{ item }}.yaml"
+    dest: "fetched/config-join-{{ item }}.yaml"
+    flat: yes
+  with_sequence: "start=1 end={{ end_sequence }}"
+
+- name: set config-join content fact
+  set_fact:
+    "config_join_content_{{ item }}": "{{ lookup('file', 'fetched/config-join-' + item + '.yaml') }}"
+  with_sequence: "start=1 end={{ end_sequence }}"
+
+- name: merge join config
+  copy:
+    content: "{{ dict1 | combine(dict2, recursive=true) | to_nice_yaml }}"
+    dest: /var/www/harvester/config-join-{{ item }}.yaml
+    owner: www-data
+    mode: 0640
+  vars:
+    dict1: "{{ vars['config_join_content_' + item] | from_yaml }}"
+    dict2: "{{ additional_config_content.content | from_yaml }}"
+  with_sequence: "start=1 end={{ end_sequence }}"
+  when: settings['harvester_config']['additional_content_url'] != ""
+
+- name: fetch config-join.yaml again
+  fetch:
+    src: "/var/www/harvester/config-join-{{ item }}.yaml"
+    dest: "fetched/config-join-merged-{{ item }}.yaml"
+    flat: yes
+  with_sequence: "start=1 end={{ end_sequence }}"
+  when: settings['harvester_config']['additional_content_url'] != ""
 
 - name: chown dir
   file:

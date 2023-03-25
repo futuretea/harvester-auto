@@ -17,6 +17,7 @@ fi
 harvester_version=$1
 user_id=$2
 cluster_id=$3
+harvester_config_url=$4
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
@@ -30,7 +31,7 @@ if [[ -f ${pid_file} ]];then
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_v2c.sh "${harvester_version}" "${user_id}" "${cluster_id}" >"${log_file}" 2>&1 &
+nohup ./_v2c.sh "${harvester_version}" "${user_id}" "${cluster_id}" "${harvester_config_url}">"${log_file}" 2>&1 &
 echo "$!" > "${pid_file}"
 echo "${harvester_version}" > "${version_file}"
 
