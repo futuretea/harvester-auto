@@ -30,14 +30,10 @@ workspace="${workspace_cluster}/harvester-auto"
 if [[ -d "${workspace}/.vagrant" ]]; then
   cd "${workspace}"
   vagrant destroy -f
-#  rm -rf .vagrant
-#  set +e
-#  virsh net-destroy "${cluster_name}"
-#  set -e
   cd "${workspace_root}"
   rm -rf "${cluster_name}"
 fi
-docker rm -f "${cluster_name}-proxy"
+
 rm -f "${log_file}"
 rm -f "${pid_file}"
 rm -f "${version_file}"

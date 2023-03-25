@@ -52,12 +52,9 @@ jinja2 settings.yml.j2 \
 bash -x ./setup_harvester.sh
 vagrant status
 
-# proxy
-host_ip=$(hostname -I | awk '{print $1}')
-host_port=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
+mgmt_ip="10.${user_id}.${cluster_id}.10"
+mgmt_port=443
 
-docker run -d --name "${cluster_name}-proxy" --restart=unless-stopped --net=host alpine/socat tcp-l:${host_port},reuseaddr,fork tcp:10.${user_id}.${cluster_id}.10:443
-
-harvester_mgmt_url="https://${host_ip}:${host_port}"
+harvester_mgmt_url="https://${mgmt_ip}:${mgmt_port}"
 echo "${harvester_mgmt_url}" > harvester_mgmt_url.txt
 printf "harvester mgmt url: %s\n" "${harvester_mgmt_url}"

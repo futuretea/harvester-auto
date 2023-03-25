@@ -11,3 +11,5 @@ default_node_number=2
 default_cpu_count=8
 default_memory_size=16384
 default_disk_size=150G
+# should keep the same with the default password in settings.yml.j2
+default_node_password="p@ssword"

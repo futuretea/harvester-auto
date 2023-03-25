@@ -242,6 +242,24 @@ func main() {
 	}
 	bot.Command("version", versionDefinition)
 
+	// command kubeconfig
+	kubeconfigDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster kubeconfig content",
+		Examples:          []string{"kubeconfig"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			clusterID := getClusterID(userID)
+			if clusterID == 0 {
+				clusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./kubeconfig.sh %d %d", userID, clusterID)
+			shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("kubeconfig", kubeconfigDefinition)
+
 	// command destroy
 	destroyDefinition := &slacker.CommandDefinition{
 		Description:       "Destroy Harvester cluster nodes",

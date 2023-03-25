@@ -34,9 +34,9 @@ if [[ -f "${harvester_mgmt_url_file}" ]]; then
   harvester_longhorn_url=${harvester_mgmt_url}/dashboard/c/local/longhorn
   echo "harvester longhorn url: ${harvester_longhorn_url}"
 
-  local_ip=$(hostname -I | awk '{print $1}')
-  harvester_image_url=${local_ip}/images
-  echo "harvester image url: ${harvester_image_url}"
+  host_ip=$(hostname -I | awk '{print $1}')
+  echo "kvm host ip: ${host_ip}"
+  echo "socks5 proxy url: socks5://${host_ip}:1080"
 else
   echo "N/A"
 fi

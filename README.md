@@ -31,12 +31,6 @@ sudo apt update
 sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
 ```
 
-#### ansible
-```bash
-sudo apt install -y ansible
-pip install jinja2-cli
-````
-
 #### docker
 ```bash
 curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
@@ -49,6 +43,20 @@ sudo apt install -y nginx
 sudo systemctl enable --now nginx
 ```
 You can use the default nginx configuration or use the custom one `configs/nginx.conf`
+
+#### Proxy
+Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
+```bash
+# refer to https://github.com/serjs/socks5-server
+sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
+```
+
+#### tools
+```bash
+sudo apt install -y ansible sshpass
+sudo pip install jinja2-cli
+sudo snap install yq
+````
 
 #### Harbor (Optional)
 - Refer to the documentation https://goharbor.io/ to install Harbor
