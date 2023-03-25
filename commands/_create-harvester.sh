@@ -53,8 +53,7 @@ bash -x ./setup_harvester.sh
 vagrant status
 
 mgmt_ip="10.${user_id}.${cluster_id}.10"
-mgmt_port=443
 
-harvester_mgmt_url="https://${mgmt_ip}:${mgmt_port}"
+harvester_mgmt_url="https://${mgmt_ip}"
 echo "${harvester_mgmt_url}" > harvester_mgmt_url.txt
 printf "harvester mgmt url: %s\n" "${harvester_mgmt_url}"
