@@ -20,8 +20,13 @@ cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+
+# get kubeconfig from the first node
 first_node_ip="10.${user_id}.${cluster_id}.11"
+sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" > ${kubeconfig_file} 2>/dev/null
+
+# update kubeconfig server and proxy-url
 host_ip=$(hostname -I | awk '{print $1}')
 socks5_ip=${host_ip}
-sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" > ${kubeconfig_file} 2>/dev/null
-cat "${kubeconfig_file}" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - | yq e '.clusters[0].cluster.proxy-url = "socks5://'"${local_ip}"':1080"' -
+socks5_port=1080
+cat "${kubeconfig_file}" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - | yq e '.clusters[0].cluster.proxy-url = "socks5://'"${socks5_ip}:${socks5_port}"'"' -
