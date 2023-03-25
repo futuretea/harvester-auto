@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/spf13/viper"
 	"log"
 	"os"
 	"os/exec"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/shomali11/slacker"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 type Slack struct {
@@ -37,6 +37,37 @@ const (
 	CommandsDir      = "commands"
 	ConfigDir        = "configs"
 )
+
+func init() {
+	// config
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(ConfigDir)
+	if err := viper.ReadInConfig(); err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+	if err := viper.Unmarshal(&config); err != nil {
+		panic(fmt.Errorf("unable to decode into struct, %w", err))
+	}
+	// log
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetLevel(logrus.WarnLevel)
+}
+
+var userID2clusterID = map[uint8]uint8{}
+
+func getClusterID(userID uint8) uint8 {
+	return userID2clusterID[userID]
+}
+
+func setClusterID(userID uint8, clusterID uint8) {
+	userID2clusterID[userID] = clusterID
+}
+
+func getUserIDByUserName(userName string) (uint8, bool) {
+	name, exist := config.Slack.Users[userName]
+	return name, exist
+}
 
 func replyOpt(botCtx slacker.BotContext) slacker.ReplyOption {
 	return slacker.WithThreadReply(botCtx.Event().Type != EventTypeMessage)
@@ -84,37 +115,6 @@ func shell2Reply(botCtx slacker.BotContext, response slacker.ResponseWriter, bas
 func clusterNotSetReply(botCtx slacker.BotContext, response slacker.ResponseWriter) {
 	err := errors.New("the current cluster id is not set, run the `cluster {clusterID}` command to set the current cluster id ")
 	response.ReportError(err, replyErrorOpt(botCtx))
-}
-
-func init() {
-	// config
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(ConfigDir)
-	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
-	}
-	if err := viper.Unmarshal(&config); err != nil {
-		panic(fmt.Errorf("unable to decode into struct, %w", err))
-	}
-	// log
-	logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.SetLevel(logrus.WarnLevel)
-}
-
-var userID2clusterID = map[uint8]uint8{}
-
-func getClusterID(userID uint8) uint8 {
-	return userID2clusterID[userID]
-}
-
-func setClusterID(userID uint8, clusterID uint8) {
-	userID2clusterID[userID] = clusterID
-}
-
-func getUserIDByUserName(userName string) (uint8, bool) {
-	name, exist := config.Slack.Users[userName]
-	return name, exist
 }
 
 func main() {
