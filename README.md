@@ -98,9 +98,25 @@ vim config.yaml
 cd -
 ```
 
-### Run
+### Run for testing
 ```bash
 ./harvester-auto
+```
+
+### Run in background
+```bash
+sudo cp configs/harvester-auto.service /etc/systemd/system/
+vim /etc/systemd/system/harvester-auto.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now harvester-auto
+```
+
+### Update
+```bash
+make
+sudo systemctl stop harvester-auto
+mv ./bin/harvester-auto .
+sudo systemctl start harvester-auto
 ```
 
 ### Send commands from slack
