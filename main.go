@@ -24,18 +24,20 @@ type Config struct {
 	Slack Slack `mapstructure:"slack"`
 }
 
-var config Config
-
-var blackList = []string{
-	"..",
-	"&",
-	";",
-}
-
 const (
 	EventTypeMessage = "message"
 	CommandsDir      = "commands"
 	ConfigDir        = "configs"
+)
+
+var (
+	config           Config
+	userID2clusterID = map[uint8]uint8{}
+	shellBlackList   = []string{
+		"..",
+		"&",
+		";",
+	}
 )
 
 func init() {
@@ -53,8 +55,6 @@ func init() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetLevel(logrus.WarnLevel)
 }
-
-var userID2clusterID = map[uint8]uint8{}
 
 func getClusterID(userID uint8) uint8 {
 	return userID2clusterID[userID]
@@ -78,7 +78,7 @@ func replyErrorOpt(botCtx slacker.BotContext) slacker.ReportErrorOption {
 }
 
 func shellCheck(bashCommand string) bool {
-	for _, s := range blackList {
+	for _, s := range shellBlackList {
 		if strings.Contains(bashCommand, s) {
 			return false
 		}
