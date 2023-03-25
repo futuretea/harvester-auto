@@ -105,8 +105,23 @@ cd -
 
 ### Run in background
 ```bash
-sudo cp configs/harvester-auto.service /etc/systemd/system/
-vim /etc/systemd/system/harvester-auto.service
+cat > /tmp/harvester-auto.service <<EOF
+[Unit]
+Description=Harvester Auto Service
+After=network.target
+
+[Service]
+Type=simple
+User=${USER}
+Restart=on-failure
+RestartSec=5s
+ExecStart=${PWD}/harvester-auto
+WorkingDirectory=${PWD}
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo cp /tmp/harvester-auto.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now harvester-auto
 ```
