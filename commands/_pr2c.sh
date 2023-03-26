@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _pr2c harvester_prs installer_prs user_id cluster_id harvester_config_url
+    _pr2c user_id cluster_id harvester_prs installer_prs harvester_config_url
 HELP
 }
 
@@ -14,10 +14,10 @@ if [ $# -lt 4 ]; then
     exit 1
 fi
 
-harvester_prs=$1
-installer_prs=$2
-user_id=$3
-cluster_id=$4
+user_id=$1
+cluster_id=$2
+harvester_prs=$3
+installer_prs=$4
 harvester_config_url=$5
 cluster_name="harvester-${user_id}-${cluster_id}"
 
