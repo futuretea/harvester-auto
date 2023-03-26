@@ -147,12 +147,20 @@ Send `help` to the Slack app to get the help message
 
 #### Commands
 - help - help
-- hi - Hi!
-  > Example: hi
 - ping - Ping! `*`
   > Example: ping
+- history - Show history `*`
+  > Example: history
+  > Example: history 100
+- virsh command args - virsh command warpper `*`
+  > Example: virsh list
+- ps - Show Harvester cluster status `*`
+  > Example: ps
+- cluster `clusterID` - Show/Set Current Harvester cluster `*`
+  > Example: cluster (show current cluster id)
+  > Example: cluster 1 (set current cluster id to 1)
 - pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create Harvester cluster after merge PR `*`
-  > Example: pr2c 3670 0
+  > Example: pr2c 0 0
 - v2c `harvesterVersion` `harvesterConfigURL` - Create Harvester cluster after download ISO *
   > Example: v2c v1.1
 - url - Show Harvester cluster url `*`
@@ -166,12 +174,5 @@ Send `help` to the Slack app to get the help message
   > Example: kubeconfig
 - destroy - Destroy Harvester cluster nodes `*`
   > Example: destroy
-- virsh command args - virsh command warpper `*`
-  > Example: virsh list
-- ps - Show Harvester cluster status `*`
-  > Example: ps
-- cluster `clusterID` - Show/Set Current Harvester cluster `*`
-  > Example: cluster (show current cluster id)
-  > Example: cluster 1 (set current cluster id to 1)
 
 `* Authorized users only`
