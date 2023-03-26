@@ -105,7 +105,7 @@ func main() {
 			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
 		},
 	}
-	bot.Command("history", historyDefinition)
+	bot.Command("history {historyNumber}", historyDefinition)
 
 	// command virsh
 	virshDefinition := &slacker.CommandDefinition{
@@ -159,7 +159,7 @@ func main() {
 
 	// command pr2c
 	pr2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create Harvester cluster after merge PR",
+		Description:       "Create a Harvester cluster after merging PRs or checkout branches, always build ISO",
 		Examples:          []string{"pr2c 0 0"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
@@ -173,15 +173,37 @@ func main() {
 			harvesterPRs := request.StringParam("harvesterPRs", "0")
 			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
 			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s", userID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL)
+			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", userID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, false)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
 	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
 
+	// command pr2cNoBuild
+	pr2cNoBuildDefinition := &slacker.CommandDefinition{
+		Description:       "Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c",
+		Examples:          []string{"pr2cNoBuild 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", userID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, true)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2cNoBuild {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cNoBuildDefinition)
+
 	// command v2c
 	v2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create Harvester cluster after download ISO",
+		Description:       "Create a Harvester cluster after downloading the ISO",
 		Examples:          []string{"v2c v1.1"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
@@ -202,7 +224,7 @@ func main() {
 
 	// command url
 	urlDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster url",
+		Description:       "Show Harvester cluster URLs",
 		Examples:          []string{"url"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {

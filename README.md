@@ -1,6 +1,6 @@
 # harvester-auto
 
-Bootstrap a Harvester Cluster with a single slack command.
+Create a Harvester Cluster with a single slack command.
 
 ## Features
 
@@ -149,21 +149,23 @@ Send `help` to the Slack app to get the help message
 - help - help
 - ping - Ping! `*`
   > Example: ping
-- history - Show history `*`
+- history `historyNumber` - Show history `*`
   > Example: history
   > Example: history 100
-- virsh command args - virsh command warpper `*`
+- virsh `command` `args` - virsh command warpper `*`
   > Example: virsh list
 - ps - Show Harvester cluster status `*`
   > Example: ps
 - cluster `clusterID` - Show/Set Current Harvester cluster `*`
   > Example: cluster (show current cluster id)
   > Example: cluster 1 (set current cluster id to 1)
-- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create Harvester cluster after merge PR `*`
+- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or checkout branches, always build ISO `*`
   > Example: pr2c 0 0
-- v2c `harvesterVersion` `harvesterConfigURL` - Create Harvester cluster after download ISO *
+- pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c `*`
+  > Example: pr2cNoBuild 0 0
+- v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
   > Example: v2c v1.1
-- url - Show Harvester cluster url `*`
+- url - Show Harvester cluster URLs `*`
   > Example: url
 - tail `lineNumber` - Tail Harvester cluster logs `*`
   > Example: tail

@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _pr2c user_id cluster_id harvester_prs installer_prs harvester_config_url
+    _pr2c user_id cluster_id harvester_prs installer_prs harvester_config_url reuse_built_iso
 HELP
 }
 
@@ -19,6 +19,7 @@ cluster_id=$2
 harvester_prs=$3
 installer_prs=$4
 harvester_config_url=$5
+reuse_built_iso=$6
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
@@ -33,7 +34,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ -z "${reuse_built_iso}" ];then
+if [ "${reuse_built_iso}" != "true" ];then
   bash -x ./_build-harvester-pr-iso.sh "${harvester_prs}" "${installer_prs}"
 fi
 

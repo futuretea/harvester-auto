@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    pr2c.sh user_id cluster_id harvester_prs installer_prs
+    pr2c.sh user_id cluster_id harvester_prs installer_prs harvester_config_url reuse_built_iso
 HELP
 }
 
@@ -19,6 +19,7 @@ cluster_id=$2
 harvester_prs=$3
 installer_prs=$4
 harvester_config_url=$5
+reuse_built_iso=$6
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
@@ -32,7 +33,7 @@ if [[ -f ${pid_file} ]];then
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_pr2c.sh "${user_id}" "${cluster_id}" "${harvester_prs}" "${installer_prs}" "${harvester_config_url}">"${log_file}" 2>&1 &
+nohup ./_pr2c.sh "${user_id}" "${cluster_id}" "${harvester_prs}" "${installer_prs}" "${harvester_config_url}" "${reuse_built_iso}">"${log_file}" 2>&1 &
 echo "$!" > "${pid_file}"
 echo "${harvester_prs}" > "${version_file}"
 echo "${installer_prs}" >> "${version_file}"
