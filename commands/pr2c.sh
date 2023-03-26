@@ -36,5 +36,6 @@ nohup ./_pr2c.sh "${harvester_prs}" "${installer_prs}" "${user_id}" "${cluster_i
 echo "$!" > "${pid_file}"
 echo "${harvester_prs}" > "${version_file}"
 echo "${installer_prs}" >> "${version_file}"
+echo "${harvester_config_url}" >> "${version_file}"
 
 echo "got"
