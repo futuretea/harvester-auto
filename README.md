@@ -151,9 +151,9 @@ Send `help` to the Slack app to get the help message
   > Example: hi
 - ping - Ping! `*`
   > Example: ping
-- pr2c `harvesterPRs` `harvesterInstallerPRs` - Create Harvester cluster after merge PR `*`
+- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create Harvester cluster after merge PR `*`
   > Example: pr2c 3670 0
-- v2c `harvesterVersion` - Create Harvester cluster after download ISO *
+- v2c `harvesterVersion` `harvesterConfigURL` - Create Harvester cluster after download ISO *
   > Example: v2c v1.1
 - url - Show Harvester cluster url `*`
   > Example: url
