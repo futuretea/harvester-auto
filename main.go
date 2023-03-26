@@ -2,53 +2,34 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/shomali11/slacker"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-)
 
-type Slack struct {
-	BotToken string           `mapstructure:"bot_token"`
-	AppToken string           `mapstructure:"app_token"`
-	Users    map[string]uint8 `mapstructure:"users"`
-}
-
-type Config struct {
-	Slack Slack `mapstructure:"slack"`
-}
-
-const (
-	EventTypeMessage = "message"
-	CommandsDir      = "commands"
-	ConfigDir        = "configs"
+	"github.com/futuretea/harvester-auto/pkg/config"
+	"github.com/futuretea/harvester-auto/pkg/constants"
+	"github.com/futuretea/harvester-auto/pkg/user"
+	"github.com/futuretea/harvester-auto/pkg/util"
 )
 
 var (
-	config           Config
-	userID2clusterID = map[uint8]uint8{}
-	shellBlackList   = []string{
-		"..",
-		"&",
-		";",
-	}
+	conf         config.Config
+	userContexts = map[uint8]*user.Context{}
 )
 
 func init() {
 	// config
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(ConfigDir)
+	viper.AddConfigPath(constants.ConfigDir)
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-	if err := viper.Unmarshal(&config); err != nil {
+	if err := viper.Unmarshal(&conf); err != nil {
 		panic(fmt.Errorf("unable to decode into struct, %w", err))
 	}
 	// log
@@ -56,86 +37,39 @@ func init() {
 	logrus.SetLevel(logrus.WarnLevel)
 }
 
-func getClusterID(userID uint8) uint8 {
-	return userID2clusterID[userID]
+func getUserContext(userID uint8) *user.Context {
+	return userContexts[userID]
 }
 
-func setClusterID(userID uint8, clusterID uint8) {
-	userID2clusterID[userID] = clusterID
+func setUserContext(userID uint8, userContext *user.Context) {
+	userContexts[userID] = userContext
 }
 
 func getUserIDByUserName(userName string) (uint8, bool) {
-	name, exist := config.Slack.Users[userName]
+	name, exist := conf.Slack.Users[userName]
 	return name, exist
-}
-
-func replyOpt(botCtx slacker.BotContext) slacker.ReplyOption {
-	return slacker.WithThreadReply(botCtx.Event().Type != EventTypeMessage)
-}
-
-func replyErrorOpt(botCtx slacker.BotContext) slacker.ReportErrorOption {
-	return slacker.WithThreadError(botCtx.Event().Type != EventTypeMessage)
-}
-
-func shellCheck(bashCommand string) bool {
-	for _, s := range shellBlackList {
-		if strings.Contains(bashCommand, s) {
-			return false
-		}
-	}
-	return true
-}
-
-func shell2Reply(botCtx slacker.BotContext, response slacker.ResponseWriter, bashCommand string) {
-	useThread := botCtx.Event().Type != EventTypeMessage
-	logrus.Debugln(bashCommand)
-	if !shellCheck(bashCommand) {
-		err := errors.New("unknown command")
-		logrus.Error(err)
-		response.ReportError(err, slacker.WithThreadError(useThread))
-		return
-	}
-
-	cmd := exec.Command("/usr/bin/bash", strings.Split(bashCommand, " ")...)
-	cmd.Env = os.Environ()
-	cmd.Dir = CommandsDir
-	output, err := cmd.Output()
-	if err != nil {
-		logrus.Error(err)
-		response.ReportError(err, slacker.WithThreadError(useThread))
-		return
-	}
-	outputStr := string(output)
-	if outputStr == "" {
-		outputStr = "done"
-	}
-	logrus.Error(response.Reply(outputStr, slacker.WithThreadReply(useThread)))
-}
-
-func clusterNotSetReply(botCtx slacker.BotContext, response slacker.ResponseWriter) {
-	err := errors.New("the current cluster id is not set, run the `cluster {clusterID}` command to set the current cluster id ")
-	response.ReportError(err, replyErrorOpt(botCtx))
 }
 
 func main() {
 	// new bot
-	bot := slacker.NewClient(config.Slack.BotToken, config.Slack.AppToken)
+	bot := slacker.NewClient(conf.Slack.BotToken, conf.Slack.AppToken)
 	authorizationFunc := func(botCtx slacker.BotContext, request slacker.Request) bool {
-		logrus.Info(botCtx.Event())
-		_, exist := getUserIDByUserName(botCtx.Event().UserName)
-		return exist
+		userName := botCtx.Event().UserName
+		text := botCtx.Event().Text
+		userID, exist := getUserIDByUserName(userName)
+		if !exist {
+			logrus.Infof("unknown user: %s", userName)
+			return false
+		}
+		userContext := getUserContext(userID)
+		if userContext == nil {
+			userContext = user.CreateContext(0, text)
+			setUserContext(userID, userContext)
+		} else {
+			userContext.Record(text)
+		}
+		return true
 	}
-
-	// command hi
-	hiDefinition := &slacker.CommandDefinition{
-		Description: "Hi!",
-		Examples:    []string{"hi"},
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			text := fmt.Sprintf("Hi, %s", botCtx.Event().UserName)
-			logrus.Error(response.Reply(text, replyOpt(botCtx)))
-		},
-	}
-	bot.Command("hi", hiDefinition)
 
 	// command ping
 	pingDefinition := &slacker.CommandDefinition{
@@ -143,142 +77,35 @@ func main() {
 		Examples:          []string{"ping"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			logrus.Error(response.Reply("pong", replyOpt(botCtx)))
+			logrus.Error(response.Reply("pong", util.ReplyOpt(botCtx)))
 		},
 	}
 	bot.Command("ping", pingDefinition)
 
-	// command pr2c
-	pr2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create Harvester cluster after merge PR",
-		Examples:          []string{"pr2c 3670 0"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			harvesterPRs := request.StringParam("harvesterPRs", "0")
-			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
-			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./pr2c.sh %s %s %d %d %s", harvesterPRs, harvesterInstallerPRs, userID, clusterID, harvesterConfigURL)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
-
-	// command v2c
-	v2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create Harvester cluster after download ISO",
-		Examples:          []string{"v2c v1.1"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			harvesterVersion := request.StringParam("harvesterVersion", "0")
-			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./v2c.sh %s %d %d %s", harvesterVersion, userID, clusterID, harvesterConfigURL)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
-
-	// command url
-	urlDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster url",
-		Examples:          []string{"url"},
+	// command history
+	historyDefinition := &slacker.CommandDefinition{
+		Description:       "Show history",
+		Examples:          []string{"history", "history 10"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
+			userContext := getUserContext(userID)
+			historyNumber := request.IntegerParam("historyNumber", 20)
+			historyLen := len(userContext.History)
+			var text string
+			if historyLen > historyNumber {
+				text = strings.Join(userContext.History[historyLen-historyNumber:], "\n")
+			} else {
+				if historyLen == 0 {
+					text = "N/A"
+				} else {
+					text = strings.Join(userContext.History, "\n")
+				}
 			}
-			bashCommand := fmt.Sprintf("./url.sh %d %d", userID, clusterID)
-			shell2Reply(botCtx, response, bashCommand)
+			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
 		},
 	}
-	bot.Command("url", urlDefinition)
-
-	// command tail
-	tailDefinition := &slacker.CommandDefinition{
-		Description:       "Tail Harvester cluster logs",
-		Examples:          []string{"tail", "tail 100"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./tail.sh %d %d %d", userID, clusterID, lineNumber)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("tail {lineNumber}", tailDefinition)
-
-	// command version
-	versionDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester version",
-		Examples:          []string{"version"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./version.sh %d %d", userID, clusterID)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("version", versionDefinition)
-
-	// command kubeconfig
-	kubeconfigDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster kubeconfig content",
-		Examples:          []string{"kubeconfig"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./kubeconfig.sh %d %d", userID, clusterID)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("kubeconfig", kubeconfigDefinition)
-
-	// command destroy
-	destroyDefinition := &slacker.CommandDefinition{
-		Description:       "Destroy Harvester cluster nodes",
-		Examples:          []string{"destroy"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			clusterID := getClusterID(userID)
-			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./destroy.sh %d %d", userID, clusterID)
-			shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("destroy", destroyDefinition)
+	bot.Command("history", historyDefinition)
 
 	// command virsh
 	virshDefinition := &slacker.CommandDefinition{
@@ -289,7 +116,7 @@ func main() {
 			command := request.StringParam("command", "")
 			args := request.StringParam("args", "")
 			bashCommand := fmt.Sprintf("./virsh.sh %s %s", command, args)
-			shell2Reply(botCtx, response, bashCommand)
+			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
 	bot.Command("virsh {command} {args}", virshDefinition)
@@ -302,7 +129,7 @@ func main() {
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
 			bashCommand := fmt.Sprintf("./ps.sh %d", userID)
-			shell2Reply(botCtx, response, bashCommand)
+			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
 	bot.Command("ps", psDefinition)
@@ -314,22 +141,160 @@ func main() {
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			var clusterID uint8
-			clusterID = uint8(request.IntegerParam("clusterID", 0))
-			if clusterID == 0 {
-				clusterID = getClusterID(userID)
-			} else {
-				setClusterID(userID, clusterID)
+			userContext := getUserContext(userID)
+			requestClusterID := uint8(request.IntegerParam("clusterID", 0))
+			if requestClusterID != 0 {
+				userContext.SetClusterID(requestClusterID)
 			}
+			clusterID := userContext.GetClusterID()
 			if clusterID == 0 {
-				clusterNotSetReply(botCtx, response)
+				util.ClusterNotSetReply(botCtx, response)
 				return
 			}
 			text := fmt.Sprintf("current cluster id is %d", clusterID)
-			logrus.Error(response.Reply(text, replyOpt(botCtx)))
+			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
 		},
 	}
 	bot.Command("cluster {clusterID}", clusterDefinition)
+
+	// command pr2c
+	pr2cDefinition := &slacker.CommandDefinition{
+		Description:       "Create Harvester cluster after merge PR",
+		Examples:          []string{"pr2c 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s", userID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
+
+	// command v2c
+	v2cDefinition := &slacker.CommandDefinition{
+		Description:       "Create Harvester cluster after download ISO",
+		Examples:          []string{"v2c v1.1"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterVersion := request.StringParam("harvesterVersion", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./v2c.sh %d %d %s %s", userID, clusterID, harvesterVersion, harvesterConfigURL)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
+
+	// command url
+	urlDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster url",
+		Examples:          []string{"url"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./url.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("url", urlDefinition)
+
+	// command tail
+	tailDefinition := &slacker.CommandDefinition{
+		Description:       "Tail Harvester cluster logs",
+		Examples:          []string{"tail", "tail 100"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			lineNumber := request.IntegerParam("lineNumber", 20)
+			bashCommand := fmt.Sprintf("./tail.sh %d %d %d", userID, clusterID, lineNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("tail {lineNumber}", tailDefinition)
+
+	// command version
+	versionDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester version",
+		Examples:          []string{"version"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./version.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("version", versionDefinition)
+
+	// command kubeconfig
+	kubeconfigDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster kubeconfig content",
+		Examples:          []string{"kubeconfig"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./kubeconfig.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("kubeconfig", kubeconfigDefinition)
+
+	// command destroy
+	destroyDefinition := &slacker.CommandDefinition{
+		Description:       "Destroy Harvester cluster nodes",
+		Examples:          []string{"destroy"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./destroy.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("destroy", destroyDefinition)
 
 	// bot run
 	ctx, cancel := context.WithCancel(context.Background())
