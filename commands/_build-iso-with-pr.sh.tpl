@@ -2,6 +2,9 @@
 set -e
 
 source $(dirname $0)/version
+# hack
+source $(dirname $0)/_util.sh
+# end
 
 cd $(dirname $0)/..
 
@@ -11,21 +14,33 @@ HARVESTER_INSTALLER_VERSION=master
 
 git clone --branch ${HARVESTER_INSTALLER_VERSION} --single-branch --depth 1 https://github.com/harvester/harvester-installer.git ../harvester-installer
 
+# hack
 cd ../harvester-installer
-
 installer_prs="<installer_prs>"
-IFS=',' read -ra installer_prs_arr <<< "${installer_prs}"
-if [[ ${#installer_prs_arr[@]} -eq 1 ]]; then
-  git fetch origin "pull/${installer_prs}/head:pr-${installer_prs}"
-  git checkout "pr-${installer_prs}"
-else
-  git checkout -b pr-${installer_prs//,/-}
-  for i in "${installer_prs_arr[@]}"; do
-    git fetch origin pull/$i/head:pr-$i
-    GIT_MERGE_AUTOEDIT=no git merge pr-$i
-  done
+fmt_installer_prs=$(sym2dash "${installer_prs}")
+prs="${installer_prs}"
+if [[ ${prs} != "0" ]];then
+  # prepare code
+  IFS=',' read -ra prs_arr <<< "${prs}"
+  if [[ ${#prs_arr[@]} -eq 1 ]]; then
+    if [[ "${prs}" =~ ^[0-9]+$ ]];then
+      fetch_checkout_pr "${prs}"
+    else
+      fetch_checkout_fork "harvester-installer" "${prs}"
+    fi
+  else
+    git checkout -b "pr-${fmt_installer_prs}"
+    for i in "${prs_arr[@]}"; do
+      if [[ "${i}" =~ ^[0-9]+$ ]];then
+        fetch_merge_pr "${i}"
+      else
+        fetch_merge_fork "harvester-installer" "${i}"
+      fi
+    done
+  fi
 fi
 cd -
+# end
 
 cd ../harvester-installer/scripts
 
