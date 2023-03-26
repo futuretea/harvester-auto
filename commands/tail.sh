@@ -16,7 +16,7 @@ fi
 
 user_id=$1
 cluster_id=$2
-num=${3:-10}
+num=${3:-20}
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
