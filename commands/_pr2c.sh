@@ -33,7 +33,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-bash -x ./_build-harvester-pr-iso.sh "${harvester_prs}" "${installer_prs}"
+if [ -z "${reuse_built_iso}" ];then
+  bash -x ./_build-harvester-pr-iso.sh "${harvester_prs}" "${installer_prs}"
+fi
 
 host_ip=$(hostname -I | awk '{print $1}')
 bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
