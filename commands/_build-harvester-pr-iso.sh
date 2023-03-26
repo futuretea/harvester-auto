@@ -12,7 +12,12 @@ HELP
 harvester_prs=${1:-"0"}
 installer_prs=${2:-"0"}
 
+# pwd: commands
 source _config.sh
+source _util.sh
+
+fmt_harvester_prs=$(sym2dash "${harvester_prs}")
+fmt_installer_prs=$(sym2dash "${installer_prs}")
 
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 TEMPDIR=$(mktemp -d -t "harvester-auto-${TIMESTAMP}-XXXXX")
@@ -27,42 +32,59 @@ replace_installer_prs() {
 
 if [[ ${installer_prs} != "0" ]];then
   replace_installer_prs _build-iso-with-pr.sh.tpl "${TEMPDIR}/build-iso-with-pr"
+  cp _util.sh "${TEMPDIR}"
 fi
 
 cd "${TEMPDIR}"
+# pwd: TEMPDIR
 
 git clone https://github.com/harvester/harvester.git
 cd harvester
+# pwd: TEMPDIR/harvester
 
-if [[ ${harvester_prs} != "0" ]];then
-  IFS=',' read -ra harvester_prs_arr <<< "${harvester_prs}"
-  if [[ ${#harvester_prs_arr[@]} -eq 1 ]]; then
-    git fetch origin "pull/${harvester_prs}/head:pr-${harvester_prs}"
-    git checkout "pr-${harvester_prs}"
+prs="${harvester_prs}"
+if [[ ${prs} != "0" ]];then
+  # prepare code
+  IFS=',' read -ra prs_arr <<< "${prs}"
+  if [[ ${#prs_arr[@]} -eq 1 ]]; then
+    if [[ "${prs}" =~ ^[0-9]+$ ]];then
+      fetch_checkout_pr "${prs}"
+    else
+      fetch_checkout_fork "harvester" "${prs}"
+    fi
   else
-    git checkout -b "pr-${harvester_prs//,/-}-${installer_prs//,/-}"
-    for i in "${harvester_prs_arr[@]}"; do
-      git fetch origin "pull/${i}/head:pr-${i}"
-      GIT_MERGE_AUTOEDIT=no git merge "pr-${i}"
+    git checkout -b "pr-${fmt_harvester_prs}"
+    for i in "${prs_arr[@]}"; do
+      if [[ "${i}" =~ ^[0-9]+$ ]];then
+        fetch_merge_pr "${i}"
+      else
+        fetch_merge_fork "harvester" "${i}"
+      fi
     done
   fi
-  export REPO=${REPO}
-  export PUSH=true
-  if [[ ! -d ".docker" ]];then
-    cp ~/.docker . -r
-  fi
-  make
 fi
 
+# build image
+export REPO=${REPO:-"${default_image_repo}"}
+export PUSH=true
+if [[ ! -d ".docker" ]];then
+  cp ~/.docker . -r
+fi
+make
 
+# build iso
 if [[ ${installer_prs} != "0" ]];then
-  mv ../build-iso-with-pr scripts/build-iso-with-pr
+  mv "${TEMPDIR}/build-iso-with-pr" scripts/
+  cp "${TEMPDIR}/_util.sh" scripts/
   make build-iso-with-pr
 else
   make build-iso
 fi
 
-output_dir="${iso_output_dir}/harvester/${harvester_prs//,/-}-${installer_prs//,/-}/master"
+# mv iso
+output_dir="${iso_output_dir}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}/master"
 mkdir -p "${output_dir}"
 mv ./dist/artifacts/* "${output_dir}/"
+
+# clean
 rm -rf "${TEMPDIR}"
