@@ -156,6 +156,7 @@ func main() {
 		},
 	}
 	bot.Command("cluster {clusterID}", clusterDefinition)
+	bot.Command("c {clusterID}", clusterDefinition)
 
 	// command pr2c
 	pr2cDefinition := &slacker.CommandDefinition{
