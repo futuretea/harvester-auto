@@ -20,6 +20,12 @@ cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+version_file="${logs_dir}/${cluster_name}.version"
+
+if [ ! -f "${version_file}" ];then
+  echo "N/A"
+  exit 0
+fi
 
 # get kubeconfig from the first node
 first_node_ip="10.${user_id}.${cluster_id}.11"
