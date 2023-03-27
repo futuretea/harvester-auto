@@ -174,6 +174,8 @@ Send `help` to the Slack app to get the help message
   > Example: version
 - kubeconfig - Show Harvester cluster kubeconfig content `*`
   > Example: kubeconfig
+- sshconfig - Show ssh config for connecting `*`
+  > Example: sshconfig
 - destroy - Destroy Harvester cluster nodes `*`
   > Example: destroy
 

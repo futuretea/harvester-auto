@@ -27,6 +27,8 @@ harvester_config_url=$9
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
+kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
 
@@ -64,3 +66,19 @@ mgmt_ip="10.${user_id}.${cluster_id}.10"
 harvester_mgmt_url="https://${mgmt_ip}"
 echo "${harvester_mgmt_url}" > harvester_mgmt_url.txt
 printf "harvester mgmt url: %s\n" "${harvester_mgmt_url}"
+
+# fetch kubeconfig
+first_node_ip="10.${user_id}.${cluster_id}.11"
+sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" > "${kubeconfig_file}.src" 2>/dev/null
+cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - >"${kubeconfig_file}"
+
+# test
+kubectl --kubeconfig=${kubeconfig_file} get no
+
+# init cluster use terraform
+if [[ -d "tf" ]];then
+  cd tf
+  ln -s "${kubeconfig_file}" local.yaml
+  terraform init
+  terraform apply -auto-approve
+fi
