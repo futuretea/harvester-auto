@@ -20,19 +20,13 @@ cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
-version_file="${logs_dir}/${cluster_name}.version"
 
-if [ ! -f "${version_file}" ];then
+if [ ! -f "${kubeconfig_file}" ];then
   echo "N/A"
   exit 0
 fi
 
-# get kubeconfig from the first node
-first_node_ip="10.${user_id}.${cluster_id}.11"
-sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" > "${kubeconfig_file}.src" 2>/dev/null
-cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - >"${kubeconfig_file}"
-
-# update kubeconfig server and proxy-url
+# update kubeconfig  proxy-url
 host_ip=$(hostname -I | awk '{print $1}')
 socks5_ip=${host_ip}
 socks5_port=1080
