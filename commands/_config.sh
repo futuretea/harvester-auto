@@ -13,3 +13,4 @@ default_memory_size=16384
 default_disk_size=150G
 # should keep the same with the default password in settings.yml.j2
 default_node_password="p@ssword"
+nfs_root_dir="/mnt/nfs"
