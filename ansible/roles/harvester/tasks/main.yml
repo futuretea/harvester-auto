@@ -35,7 +35,7 @@
     validate_certs: no
     return_content: yes
   register: additional_config_content
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: save additional harvester config
   copy:
@@ -43,14 +43,14 @@
     dest: /var/www/harvester/config-additional.yaml
     owner: www-data
     mode: 0640
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: fetch config-additional.yaml
   fetch:
     src: /var/www/harvester/config-additional.yaml
     dest: fetched/config-additional.yaml
     flat: yes
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: merge create config
   copy:
@@ -61,14 +61,14 @@
   vars:
     dict1: "{{ config_create_content | from_yaml }}"
     dict2: "{{ additional_config_content.content | from_yaml }}"
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: fetch config-create.yaml again
   fetch:
     src: /var/www/harvester/config-create.yaml
     dest: fetched/config-create-merge.yaml
     flat: yes
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 # NOTE(gyee): Ansible pre-process the with_sequence variable, so we have to
 # make sure end sequence is at least 1 even if we have only one Harvester node
@@ -110,7 +110,7 @@
     dict1: "{{ vars['config_join_content_' + item] | from_yaml }}"
     dict2: "{{ additional_config_content.content | from_yaml }}"
   with_sequence: "start=1 end={{ end_sequence }}"
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: fetch config-join.yaml again
   fetch:
@@ -118,7 +118,7 @@
     dest: "fetched/config-join-merged-{{ item }}.yaml"
     flat: yes
   with_sequence: "start=1 end={{ end_sequence }}"
-  when: settings['harvester_config']['additional_content_url'] != ""
+  when: settings['harvester_config']['additional_content_url']
 
 - name: chown dir
   file:
