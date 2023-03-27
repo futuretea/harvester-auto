@@ -192,5 +192,10 @@ Send `help` to the Slack app to get the help message
   > Example: virsh list
 - ps - Show Harvester cluster status `*`
   > Example: ps
+- pr2ui `uiPRs` - Build Harvester Dashboard `*`
+  > Example: pr2ui 0
+- log4ui `lineNumber` - Tail Harvester Dashboard Build Logs `*`
+  > Example: log4ui
+  > Example: log4ui 100
 
 `* Authorized users only`
