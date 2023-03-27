@@ -56,9 +56,21 @@ sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-
 
 #### Tools
 ```bash
-sudo apt install -y ansible sshpass
+sudo apt install -y ansible sshpass jq
 sudo pip install jinja2-cli
 sudo snap install yq
+# kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+mv kubectl /usr/local/bin/
+# helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+# terraform
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
 ````
 
 #### Harbor (Optional, you can use docker hub or registry instead)
