@@ -82,58 +82,6 @@ func main() {
 	}
 	bot.Command("ping", pingDefinition)
 
-	// command history
-	historyDefinition := &slacker.CommandDefinition{
-		Description:       "Show history",
-		Examples:          []string{"history", "history 10"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			userContext := getUserContext(userID)
-			historyNumber := request.IntegerParam("historyNumber", 20)
-			historyLen := len(userContext.History)
-			var text string
-			if historyLen > historyNumber {
-				text = strings.Join(userContext.History[historyLen-historyNumber:], "\n")
-			} else {
-				if historyLen == 0 {
-					text = "N/A"
-				} else {
-					text = strings.Join(userContext.History, "\n")
-				}
-			}
-			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
-		},
-	}
-	bot.Command("history {historyNumber}", historyDefinition)
-
-	// command virsh
-	virshDefinition := &slacker.CommandDefinition{
-		Description:       "virsh command warpper",
-		Examples:          []string{"virsh list"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			command := request.StringParam("command", "")
-			args := request.StringParam("args", "")
-			bashCommand := fmt.Sprintf("./virsh.sh %s %s", command, args)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("virsh {command} {args}", virshDefinition)
-
-	// command ps
-	psDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster status",
-		Examples:          []string{"ps"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			bashCommand := fmt.Sprintf("./ps.sh %d", userID)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("ps", psDefinition)
-
 	// command cluster
 	clusterDefinition := &slacker.CommandDefinition{
 		Description:       "Show/Set Current Harvester cluster",
@@ -223,25 +171,6 @@ func main() {
 	}
 	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
 
-	// command url
-	urlDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster URLs",
-		Examples:          []string{"url"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			userContext := getUserContext(userID)
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./url.sh %d %d", userID, clusterID)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("url", urlDefinition)
-
 	// command tail
 	tailDefinition := &slacker.CommandDefinition{
 		Description:       "Tail Harvester cluster logs",
@@ -262,6 +191,25 @@ func main() {
 	}
 	bot.Command("tail {lineNumber}", tailDefinition)
 
+	// command url
+	urlDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster URLs",
+		Examples:          []string{"url"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./url.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("url", urlDefinition)
+
 	// command version
 	versionDefinition := &slacker.CommandDefinition{
 		Description:       "Show Harvester version",
@@ -280,6 +228,25 @@ func main() {
 		},
 	}
 	bot.Command("version", versionDefinition)
+
+	// command settings
+	settingsDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester settings",
+		Examples:          []string{"settings"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./settings.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("settings", settingsDefinition)
 
 	// command kubeconfig
 	kubeconfigDefinition := &slacker.CommandDefinition{
@@ -337,6 +304,58 @@ func main() {
 		},
 	}
 	bot.Command("destroy", destroyDefinition)
+
+	// command history
+	historyDefinition := &slacker.CommandDefinition{
+		Description:       "Show history",
+		Examples:          []string{"history", "history 10"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			historyNumber := request.IntegerParam("historyNumber", 20)
+			historyLen := len(userContext.History)
+			var text string
+			if historyLen > historyNumber {
+				text = strings.Join(userContext.History[historyLen-historyNumber:], "\n")
+			} else {
+				if historyLen == 0 {
+					text = "N/A"
+				} else {
+					text = strings.Join(userContext.History, "\n")
+				}
+			}
+			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
+		},
+	}
+	bot.Command("history {historyNumber}", historyDefinition)
+
+	// command virsh
+	virshDefinition := &slacker.CommandDefinition{
+		Description:       "virsh command warpper",
+		Examples:          []string{"virsh list"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			command := request.StringParam("command", "")
+			args := request.StringParam("args", "")
+			bashCommand := fmt.Sprintf("./virsh.sh %s %s", command, args)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("virsh {command} {args}", virshDefinition)
+
+	// command ps
+	psDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster status",
+		Examples:          []string{"ps"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			bashCommand := fmt.Sprintf("./ps.sh %d", userID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("ps", psDefinition)
 
 	// bot run
 	ctx, cancel := context.WithCancel(context.Background())

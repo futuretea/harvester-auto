@@ -19,7 +19,6 @@ cluster_id=$2
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
@@ -48,10 +47,6 @@ if [[ -f "${harvester_mgmt_url_file}" ]]; then
         chmod -R 777 "${nfs_cluster_dir}"
     fi
     echo "NFS Backup Target URL: nfs://${host_ip}:${nfs_cluster_dir}"
-  fi
-  if [[ -f "${kubeconfig_file}" ]];then
-    echo "Setting URLs:"
-    kubectl --kubeconfig=${kubeconfig_file} get settings -ojson | jq -r '.items[] | select([ .metadata.name ] | inside("cluster-registration-url,release-download-url,upgrade-checker-url,ui-index,ui-plugin-index,ui-source" | split(","))) | .metadata.name+":"+(if (.value | length) then .value else .default end)'
   fi
 else
   echo "N/A"
