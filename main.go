@@ -299,6 +299,25 @@ func main() {
 	}
 	bot.Command("kubeconfig", kubeconfigDefinition)
 
+	// command sshconfig
+	sshconfigDefinition := &slacker.CommandDefinition{
+		Description:       "Show ssh config for connecting",
+		Examples:          []string{"sshconfig"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./sshconfig.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("sshconfig", sshconfigDefinition)
+
 	// command destroy
 	destroyDefinition := &slacker.CommandDefinition{
 		Description:       "Destroy Harvester cluster nodes",
