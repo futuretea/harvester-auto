@@ -82,10 +82,10 @@ func main() {
 	}
 	bot.Command("ping", pingDefinition)
 
-	// command cluster
+	// command c
 	clusterDefinition := &slacker.CommandDefinition{
 		Description:       "Show/Set Current Harvester cluster",
-		Examples:          []string{"cluster (show current cluster id)", "cluster 1 (set current cluster id to 1)"},
+		Examples:          []string{"c (show current cluster id)", "c 1 (set current cluster id to 1)"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
@@ -103,7 +103,6 @@ func main() {
 			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
 		},
 	}
-	bot.Command("cluster {clusterID}", clusterDefinition)
 	bot.Command("c {clusterID}", clusterDefinition)
 
 	// command pr2c
