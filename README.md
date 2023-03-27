@@ -170,9 +170,9 @@ Send `help` to the Slack app to get the help message
   > Example: pr2cNoBuild 0 0
 - v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
   > Example: v2c v1.1
-- logs `lineNumber` - Tail Harvester cluster logs `*`
-  > Example: logs
-  > Example: logs 100
+- log `lineNumber` - Tail Harvester cluster logs `*`
+  > Example: log
+  > Example: log 100
 - url - Show Harvester cluster URLs `*`
   > Example: url
 - version - Show Harvester version `*`
