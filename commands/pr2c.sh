@@ -35,8 +35,8 @@ fi
 mkdir -p "${logs_dir}"
 nohup ./_pr2c.sh "${user_id}" "${cluster_id}" "${harvester_prs}" "${installer_prs}" "${harvester_config_url}" "${reuse_built_iso}">"${log_file}" 2>&1 &
 echo "$!" > "${pid_file}"
-echo "${harvester_prs}" > "${version_file}"
-echo "${installer_prs}" >> "${version_file}"
-echo "${harvester_config_url}" >> "${version_file}"
+echo "harvester/harvester PRs: ${harvester_prs}" > "${version_file}"
+echo "harvester/harvester-installer PRs: ${installer_prs}" >> "${version_file}"
+echo "harvester configuration URL: ${harvester_config_url}" >> "${version_file}"
 
 echo "got"
