@@ -356,6 +356,34 @@ func main() {
 	}
 	bot.Command("ps", psDefinition)
 
+	// command pr2ui
+	pr2uiDefinition := &slacker.CommandDefinition{
+		Description:       "Build Harvester Dashboard",
+		Examples:          []string{"pr2ui 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			uiPRs := request.StringParam("uiPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2ui.sh %d %s", userID, uiPRs)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2ui {uiPRs}", pr2uiDefinition)
+
+	// command log4ui
+	log4uiDefinition := &slacker.CommandDefinition{
+		Description:       "Tail Harvester Dashboard Build Logs",
+		Examples:          []string{"log4ui", "log4ui 100"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			lineNumber := request.IntegerParam("lineNumber", 20)
+			bashCommand := fmt.Sprintf("./log4ui.sh %d %d", userID, lineNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("log4ui {lineNumber}", log4uiDefinition)
+
 	// bot run
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
