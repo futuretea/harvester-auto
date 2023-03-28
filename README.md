@@ -13,10 +13,11 @@ Create a Harvester Cluster with a single slack command.
 - [x] Auto-Build-ISO
     - [x] Multi-Repo
     - [x] Multi-Branch
-- [x] Auto-Deploy
-- [ ] Auto-Notification
+- [x] Auto-Deploy-Cluster
+- [x] Auto-Init-Cluster
+- [x] Auto-Build-UI
+- [x] Auto-Notification
 - [ ] Auto-Patch-Image
-- [ ] Auto-Power-Management
 
 ## Architecture
 
