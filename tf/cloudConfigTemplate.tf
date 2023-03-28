@@ -44,7 +44,7 @@ resource "kubernetes_config_map" "docker-rancher" {
           - qemu-guest-agent.service
         - "curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -"
         - "sudo systemctl enable --now docker"
-        - "docker run -itd --name rancher --privileged=true  --restart=unless-stopped -p 443:443 -p 80:80 rancher/rancher:v2.7-head"
+        - "docker run -itd --name rancher --privileged=true --restart=unless-stopped -p 443:443 -p 80:80 rancher/rancher:v2.7-head"
       EOF
   }
 }
