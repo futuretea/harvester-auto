@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/shomali11/slacker"
@@ -35,6 +36,10 @@ func init() {
 	// log
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetLevel(logrus.WarnLevel)
+	// env
+	for envName, envValue := range conf.Slack.Envs {
+		os.Setenv(envName, envValue)
+	}
 }
 
 func getUserContext(userID uint8) *user.Context {
