@@ -82,3 +82,9 @@ if [[ -d "tf" ]];then
   terraform init
   terraform apply -auto-approve
 fi
+
+
+if [ -n "${slack_webhook_url}" ]; then
+  text="create cluster ${cluster_id} for user ${user_id} finished"
+  curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
+fi

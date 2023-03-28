@@ -1,6 +1,8 @@
 slack:
   bot_token: <bot_token>
   app_token: <app_token>
+  envs:
+    slack_webhook_url: <slack_webhook_url>
   users:
     <slack username 1>: 1
     <slack username 2>: 2
