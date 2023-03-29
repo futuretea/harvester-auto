@@ -76,6 +76,8 @@ harvester_config:
   ntp_servers:
     - 0.suse.pool.ntp.org
     - 1.suse.pool.ntp.org
+  dns_nameservers:
+    - {{ dns_nameserver }}
 
   additional_content_url: {{ harvester_config_url }}
 

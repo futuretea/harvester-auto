@@ -11,6 +11,7 @@ default_node_number=2
 default_cpu_count=8
 default_memory_size=16384
 default_disk_size=150G
+default_dns_nameserver="8.8.8.8"
 # should keep the same with the default password in settings.yml.j2
 default_node_password="p@ssword"
 nfs_root_dir="/mnt/nfs"

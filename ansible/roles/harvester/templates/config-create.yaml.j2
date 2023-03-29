@@ -9,6 +9,10 @@ os:
     - {{ ssh_key }}
 {% endfor %}
   password: {{ settings['harvester_config']['password'] }}
+  dns_nameservers:
+{% for dns_nameserver in settings['harvester_config']['dns_nameservers'] %}
+    - {{ dns_nameserver }}
+{% endfor %}
   ntp_servers:
 {% for ntp_server in settings['harvester_config']['ntp_servers'] %}
     - {{ ntp_server }}
