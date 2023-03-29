@@ -3,21 +3,20 @@
 Create a Harvester Cluster with a single slack command.
 
 ## Features
-
+- [x] Multi-Repo
+- [x] Multi-Branch
 - [x] Multi-User
 - [x] Multi-Cluster
-  - [x] Multi-Node-Per-Cluster
-    - [x] Multi-Disk-Per-Node
-    - [x] Multi-NIC-Per-Node
+- [x] Multi-Node-Per-Cluster
+- [x] Multi-Disk-Per-Node
+- [x] Multi-NIC-Per-Node
 - [x] Auto-Download-Release
 - [x] Auto-Build-ISO
-    - [x] Multi-Repo
-    - [x] Multi-Branch
 - [x] Auto-Deploy-Cluster
 - [x] Auto-Init-Cluster
-- [x] Auto-Build-UI
+- [x] Auto-Build-Push-UI
+- [x] Auto-Build-Push-Patch-Image
 - [x] Auto-Notification
-- [ ] Auto-Patch-Image
 
 ## Architecture
 
