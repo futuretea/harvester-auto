@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    ui_tail.sh user_id num
+    log4ui.sh user_id num
 HELP
 }
 

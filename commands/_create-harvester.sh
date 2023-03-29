@@ -5,8 +5,8 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    create-harvester.sh harvester_url harvester_version node_number user_id cluster_id cpu_count memory_size disk_size harvester_config_url
-    create-harvester.sh https://releases.rancher.com/harvester master 2 1 1 8 16384 150G
+    _create-harvester.sh harvester_url harvester_version node_number user_id cluster_id cpu_count memory_size disk_size harvester_config_url
+    _create-harvester.sh https://releases.rancher.com/harvester master 2 1 1 8 16384 150G
 HELP
 }
 
