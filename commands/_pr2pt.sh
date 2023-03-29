@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _s2i user_id cluster_id repo_name repo_prs
+    _pr2pt user_id cluster_id repo_name repo_prs
 HELP
 }
 
@@ -23,10 +23,10 @@ cluster_name="harvester-${user_id}-${cluster_id}"
 source _config.sh
 source _util.sh
 
-pid_file="${logs_dir}/${cluster_name}-s2i.pid"
+pid_file="${logs_dir}/${cluster_name}-patch.pid"
 cleanup() {
   rm -rf "${pid_file}"
 }
 trap cleanup EXIT
 
-bash -x ./_build-push-harvester-pr-image.sh "${user_id}" "${cluster_id}" "${repo_name}" "${repo_prs}"
+bash -x ./_build-patch-harvester-pr-image.sh "${user_id}" "${cluster_id}" "${repo_name}" "${repo_prs}"

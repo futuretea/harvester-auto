@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    s2i.sh user_id cluster_id repo_name repo_prs
+    pr2pt.sh user_id cluster_id repo_name repo_prs
 HELP
 }
 
@@ -21,8 +21,8 @@ repo_prs=$4
 cluster_name="harvester-${user_id}-${cluster_id}"
 
 source _config.sh
-log_file="${logs_dir}/${cluster_name}-s2i.log"
-pid_file="${logs_dir}/${cluster_name}-s2i.pid"
+log_file="${logs_dir}/${cluster_name}-patch.log"
+pid_file="${logs_dir}/${cluster_name}-patch.pid"
 
 if [[ -f ${pid_file} ]];then
   echo "other job running"
@@ -30,7 +30,7 @@ if [[ -f ${pid_file} ]];then
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_s2i.sh "${user_id}" "${cluster_id}" "${repo_name}" "${repo_prs}" >"${log_file}" 2>&1 &
+nohup ./_pr2pt.sh "${user_id}" "${cluster_id}" "${repo_name}" "${repo_prs}" >"${log_file}" 2>&1 &
 echo "$!" > "${pid_file}"
 
 echo "got"
