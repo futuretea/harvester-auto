@@ -52,6 +52,7 @@ jinja2 settings.yml.j2 \
     -D harvester_url=${harvester_url} \
     -D harvester_version=${harvester_version} \
     -D harvester_config_url=${harvester_config_url} \
+    -D dns_nameserver=${default_dns_nameserver} \
     -D node_number=${node_number} \
     -D user_id=${user_id} \
     -D cluster_id=${cluster_id} \
