@@ -212,5 +212,9 @@ Send `help` to the Slack app to get the help message
 - log4ui `lineNumber` - Tail Harvester Dashboard Build Logs `*`
   > Example: log4ui
   > Example: log4ui 100
-
+- pr2pt `repoName` `repoPRs` - Patch Harvester image after merging PRs or checkout branches, always build image `*`
+  > Example: pr2pt harvester 0
+- log4pt `lineNumber` - Tail Harvester Patch Logs `*`
+  > Example: log4pt
+  > Example: log4pt 100
 `* Authorized users only`

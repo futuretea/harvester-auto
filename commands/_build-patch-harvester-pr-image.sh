@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    build-push-harvester-pr-image user_id cluster_id repo_name repo_prs
+    build-patch-harvester-pr-image user_id cluster_id repo_name repo_prs
 HELP
 }
 
@@ -27,7 +27,7 @@ source _util.sh
 fmt_repo_prs=$(sym2dash "${repo_prs}")
 
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
-TEMPDIR=$(mktemp -d -t "harvester-auto-s2i-${TIMESTAMP}-XXXXX")
+TEMPDIR=$(mktemp -d -t "harvester-auto-patch-${TIMESTAMP}-XXXXX")
 printf "TEMP_DIR=%s\n" "${TEMPDIR}"
 
 cd "${TEMPDIR}"

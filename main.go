@@ -361,6 +361,47 @@ func main() {
 	}
 	bot.Command("ps", psDefinition)
 
+	// command pr2pt
+	pr2ptDefinition := &slacker.CommandDefinition{
+		Description:       "Patch Harvester image after merging PRs or checkout branches, always build image",
+		Examples:          []string{"pr2pt harvester 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			repoName := request.StringParam("repoName", "harvester")
+			repoPRs := request.StringParam("repoPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2pt.sh %d %d %s %s", userID, clusterID, repoName, repoPRs)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2pt {repoName} {repoPRs}", pr2ptDefinition)
+
+	// command log4pt
+	log4ptDefinition := &slacker.CommandDefinition{
+		Description:       "Tail Harvester Patch Logs",
+		Examples:          []string{"log4pt", "log4pt 100"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			lineNumber := request.IntegerParam("lineNumber", 20)
+			bashCommand := fmt.Sprintf("./log4pt.sh %d %d %d", userID, clusterID, lineNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("log4pt {lineNumber}", log4ptDefinition)
+
 	// command pr2ui
 	pr2uiDefinition := &slacker.CommandDefinition{
 		Description:       "Build Harvester Dashboard",

@@ -24,11 +24,11 @@ TARGET_TAG=${2:-${SOURCE_TAG}}
 
 function tag_push_image() {
   local image_name=$1
-  docker tag ${SOURCE_REPO}/${image_name}:${TARGET_TAG} ${TARGET_REPO}/${image_name}:${TARGET_TAG}
-  docker push ${TARGET_REPO}/${image_name}:${TARGET_TAG}
+  docker tag "${SOURCE_REPO}/${image_name}:${TARGET_TAG}" "${TARGET_REPO}/${image_name}:${TARGET_TAG}"
+  docker push "${TARGET_REPO}/${image_name}:${TARGET_TAG}"
 }
 
-repo_name=$(basename ${PWD})
+repo_name=$(basename "${PWD}")
 
 case ${repo_name} in
 harvester)
