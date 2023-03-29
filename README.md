@@ -104,6 +104,14 @@ vim config.yaml
 cd -
 ```
 
+Change the dns nameserver address and image repo configurations in `./commands/_config.sh`
+```bash
+cd commands
+cp _config.sh.example _config.sh
+vim _config.sh
+cd -
+```
+
 You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
 ```bash
 sudo cp configs/ngxin.conf /etc/nginx/nginx.conf
