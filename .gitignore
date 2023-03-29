@@ -2,6 +2,7 @@
 .idea
 .vscode
 harvester-auto
-config.yaml
-_config.sh
 vendor
+commands/_config.sh
+configs/config.yaml
+configs/nginx.conf
