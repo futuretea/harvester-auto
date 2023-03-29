@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    build-patch-harvester-pr-image user_id cluster_id repo_name repo_prs
+    _build-patch-harvester-pr-image user_id cluster_id repo_name repo_prs
 HELP
 }
 

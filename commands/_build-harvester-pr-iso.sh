@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    build-harvester-pr-iso harvester_prs installer_prs
+    _build-harvester-pr-iso harvester_prs installer_prs
 HELP
 }
 

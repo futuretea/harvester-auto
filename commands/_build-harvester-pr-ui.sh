@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    build-harvester-pr-ui ui_prs
+    _build-harvester-pr-ui ui_prs
 HELP
 }
 

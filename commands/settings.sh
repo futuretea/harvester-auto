@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    url.sh user_id cluster_id
+    settings.sh user_id cluster_id
 HELP
 }
 

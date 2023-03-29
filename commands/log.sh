@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    kill.sh user_id cluster_id num
+    log.sh user_id cluster_id num
 HELP
 }
 
