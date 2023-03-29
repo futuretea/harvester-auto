@@ -41,6 +41,13 @@ curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
 sudo systemctl enable --now docker
 ```
 
+#### Proxy
+Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
+```bash
+# refer to https://github.com/serjs/socks5-server
+sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
+```
+
 #### Nginx
 Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files under `/var/www/html`.
 ```bash
@@ -48,12 +55,19 @@ sudo apt install -y nginx
 sudo systemctl enable --now nginx
 ```
 
-#### Proxy
-Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
+#### Harbor
+- Refer to the documentation https://goharbor.io/ to install Harbor
+- create a `rancher` project
+- docker login
 ```bash
-# refer to https://github.com/serjs/socks5-server
-sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
+docker login <Harbor domain>
 ```
+
+#### Dnsmasq
+- Refer to the documentation https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/ to install dnsmasq
+
+#### Nodejs
+- Refer to the documentation https://computingforgeeks.com/install-node-js-14-on-ubuntu-debian-linux/ to install nodejs
 
 #### Tools
 ```bash
@@ -74,15 +88,6 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install terraform
 ````
 
-#### Harbor (Optional, you can use docker hub or registry instead)
-- Refer to the documentation https://goharbor.io/ to install Harbor
-- create a `rancher` project
-- docker login
-```bash
-docker login <Harbor domain/ip:port>
-```
-Adjust the `default_image_repo` in the `./commands/_config.sh` to `<Harbor domain/ip:port>/rancher`. It defaults to `127.0.0.1:88/rancher`.
-
 ## Usage
 
 ### Preparing your Slack App
@@ -96,14 +101,6 @@ cd harvester-auto
 ```
 
 ### Configure
-Fill in the Slack app token and user configurations in `./configs/config.yaml`
-```bash
-cd configs
-cp config.yaml.example config.yaml
-vim config.yaml
-cd -
-```
-
 Change the dns nameserver address and image repo configurations in `./commands/_config.sh`
 ```bash
 cd commands
@@ -112,9 +109,18 @@ vim _config.sh
 cd -
 ```
 
+Fill in the Slack app token and user configurations in `./configs/config.yaml`
+```bash
+cd configs
+cp config.yaml.example config.yaml
+vim config.yaml
+cd -
+```
+
 You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
 ```bash
-sudo cp configs/ngxin.conf /etc/nginx/nginx.conf
+sudo cp configs/ngxin.conf.example /etc/nginx/nginx.conf
+sudo vim /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl restart nginx
 ```
