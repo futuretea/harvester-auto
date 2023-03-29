@@ -62,11 +62,11 @@ fi
 # build
 make
 
-harvester-push-images "${push_image_repo}"
+harvester-push-images "${default_image_repo}"
 
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 export KUBECONFIG="${kubeconfig_file}"
-harvester-patch-images "${push_image_repo}"
+harvester-patch-images "${default_image_repo}"
 
 # clean
 rm -rf "${TEMPDIR}"
