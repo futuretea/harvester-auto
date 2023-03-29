@@ -3,4 +3,5 @@
 .vscode
 harvester-auto
 config.yaml
+_config.sh
 vendor
