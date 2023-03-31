@@ -29,7 +29,7 @@ fi
 
 mkdir -p "${ui_logs_dir}"
 nohup ./_pr2ui.sh "${user_id}" "${ui_prs}">"${ui_log_file}" 2>&1 &
-echo "$!" > "${ui_pid_file}"
+echo "$! pr2ui ${ui_prs}" > "${ui_pid_file}"
 echo "harvester/dashboard PRs: ${ui_prs}" > "${ui_version_file}"
 
 echo "got"

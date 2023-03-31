@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -350,16 +351,48 @@ func main() {
 
 	// command ps
 	psDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster status",
+		Description:       "Show running jobs",
 		Examples:          []string{"ps"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
-			bashCommand := fmt.Sprintf("./ps.sh %d", userID)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			bashCommand := fmt.Sprintf("./ps.sh %d %d", userID, clusterID)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
 	bot.Command("ps", psDefinition)
+
+	// command kill
+	killDefinition := &slacker.CommandDefinition{
+		Description:       "Kill running job",
+		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			job := request.StringParam("job", "")
+			switch job {
+			case "2c", "2pt":
+				if clusterID == 0 {
+					util.ClusterNotSetReply(botCtx, response)
+					return
+				}
+			case "2ui":
+			case "":
+				response.ReportError(errors.New("missing job type"), util.ReplyErrorOpt(botCtx))
+				return
+			default:
+				response.ReportError(errors.New("invalid job type"), util.ReplyErrorOpt(botCtx))
+				return
+			}
+			bashCommand := fmt.Sprintf("./kill.sh %d %d %s", userID, clusterID, job)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("kill {job}", killDefinition)
 
 	// command pr2pt
 	pr2ptDefinition := &slacker.CommandDefinition{

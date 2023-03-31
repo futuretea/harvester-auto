@@ -31,6 +31,6 @@ fi
 
 mkdir -p "${logs_dir}"
 nohup ./_pr2pt.sh "${user_id}" "${cluster_id}" "${repo_name}" "${repo_prs}" >"${log_file}" 2>&1 &
-echo "$!" > "${pid_file}"
+echo "$! pr2pt ${repo_name} ${repo_prs}" > "${pid_file}"
 
 echo "got"
