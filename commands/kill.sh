@@ -5,29 +5,56 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    kill.sh user_id cluster_id
+    kill.sh user_id cluster_id job
 HELP
 }
 
-if [ $# -lt 2 ]; then
+kill_job(){
+  local pid_file=$1
+  local pid
+  pid=$(awk '{print $1}' "${pid_file}")
+  set +e
+  pids=$(pstree -p "${pid}" | awk -F '[()]' '{printf $2" "}')
+  for i in $(seq 1 10); do
+    kill -TERM ${pids}
+    sleep 1
+  done
+  set -e
+}
+
+if [ $# -lt 3 ]; then
     usage
     exit 1
 fi
 
 user_id=$1
 cluster_id=$2
-cluster_name="harvester-${user_id}-${cluster_id}"
+job=$3
 
 source _config.sh
+source _ui_config.sh
+cluster_name="harvester-${user_id}-${cluster_id}"
+
+case ${job} in
+"2c")
 pid_file="${logs_dir}/${cluster_name}.pid"
+  ;;
+"2pt")
+pid_file="${logs_dir}/${cluster_name}-patch.pid"
+  ;;
+"2ui")
+pid_file="${ui_logs_dir}/${user_id}.pid"
+  ;;
+*)
+echo "invalid job type"
+exit 0
+  ;;
+esac
 
-if [[ -f ${pid_file} ]];then
-  pid=$(cat "${pid_file}")
-  set +e
-  child_pid=$(pgrep -P "${pid}")
-  kill -9 "${pid}" "${child_pid}"
-  set -e
-  rm -rf "${pid_file}"
+if [ -f "${pid_file}" ];then
+  kill_job "${pid_file}"
+  echo "done"
+else
+  echo "job is not running"
+  exit 0
 fi
-
-echo "done"
