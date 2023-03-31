@@ -76,9 +76,9 @@ make
 if [[ ${installer_prs} != "0" ]];then
   mv "${TEMPDIR}/build-iso-with-pr" scripts/
   cp "${TEMPDIR}/_util.sh" scripts/
-  make build-iso-with-pr
+  RKE2_IMAGE_REPO=${rke2_image_repo} make build-iso-with-pr
 else
-  make build-iso
+  RKE2_IMAGE_REPO=${rke2_image_repo} make build-iso
 fi
 
 # mv iso
