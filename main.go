@@ -208,9 +208,9 @@ func main() {
 	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
 
 	// command log
-	logDefinition := &slacker.CommandDefinition{
+	log4cDefinition := &slacker.CommandDefinition{
 		Description:       "Tail Harvester cluster logs",
-		Examples:          []string{"log", "log 100"},
+		Examples:          []string{"log4c", "log4c 100"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -223,11 +223,11 @@ func main() {
 				return
 			}
 			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./log.sh %d %d %d", namespaceID, clusterID, lineNumber)
+			bashCommand := fmt.Sprintf("./log4c.sh %d %d %d", namespaceID, clusterID, lineNumber)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
-	bot.Command("log {lineNumber}", logDefinition)
+	bot.Command("log4c {lineNumber}", log4cDefinition)
 
 	// command url
 	urlDefinition := &slacker.CommandDefinition{
