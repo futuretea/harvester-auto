@@ -37,6 +37,11 @@ func shellCheck(bashCommand string) bool {
 	return true
 }
 
+func NoPermissionReply(botCtx slacker.BotContext, response slacker.ResponseWriter) {
+	err := errors.New("no permission")
+	response.ReportError(err, ReplyErrorOpt(botCtx))
+}
+
 func ClusterNotSetReply(botCtx slacker.BotContext, response slacker.ResponseWriter) {
 	err := errors.New("the current cluster id is not set, run the `c {clusterID}` command to set the current cluster id ")
 	response.ReportError(err, ReplyErrorOpt(botCtx))
