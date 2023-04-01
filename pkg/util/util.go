@@ -63,7 +63,7 @@ func Shell2Reply(botCtx slacker.BotContext, response slacker.ResponseWriter, bas
 	}
 	outputStr := string(output)
 	if outputStr == "" {
-		outputStr = "done"
+		outputStr = "N/A"
 	}
 	logrus.Error(response.Reply(outputStr, slacker.WithThreadReply(useThread)))
 }
