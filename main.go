@@ -253,6 +253,46 @@ func main() {
 	}
 	bot.Command("settings", settingsDefinition)
 
+	// command podImages
+	pisDefinition := &slacker.CommandDefinition{
+		Description:       "Show Pod Images",
+		Examples:          []string{"pis"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			namespace := request.StringParam("namespace", "harvester-system")
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./pis.sh %d %d %s", userID, clusterID, namespace)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pis {namespace}", pisDefinition)
+
+	// command get
+	getDefinition := &slacker.CommandDefinition{
+		Description:       "kubectl get",
+		Examples:          []string{"get"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			args := request.StringParam("args", "vm -n default -o wide")
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./get.sh %d %d %s", userID, clusterID, args)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("get {args}", getDefinition)
+
 	// command kubeconfig
 	kubeconfigDefinition := &slacker.CommandDefinition{
 		Description:       "Show Harvester cluster kubeconfig content",
