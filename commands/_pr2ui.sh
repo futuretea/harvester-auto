@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _pr2ui user_id ui_prs
+    _pr2ui namespace_id ui_prs
 HELP
 }
 
@@ -14,7 +14,7 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 ui_prs=$2
 
 source _ui_config.sh
@@ -22,7 +22,7 @@ source _util.sh
 
 fmt_ui_prs=$(sym2dash "${ui_prs}")
 
-pid_file="${ui_logs_dir}/${user_id}.pid"
+pid_file="${ui_logs_dir}/${namespace_id}.pid"
 cleanup() {
   rm -rf "${pid_file}"
 }

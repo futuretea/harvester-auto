@@ -36,21 +36,21 @@ harvester_network_config:
   offline: false
 
   dhcp_server:
-    ip: 10.{{ user_id }}.{{ cluster_id }}.254
-    subnet: 10.{{ user_id }}.{{ cluster_id }}.0
+    ip: 10.{{ namespace_id }}.{{ cluster_id }}.254
+    subnet: 10.{{ namespace_id }}.{{ cluster_id }}.0
     netmask: 255.255.255.0
-    range: 10.{{ user_id }}.{{ cluster_id }}.50 10.{{ user_id }}.{{ cluster_id }}.130
+    range: 10.{{ namespace_id }}.{{ cluster_id }}.50 10.{{ namespace_id }}.{{ cluster_id }}.130
     https: false
   # Reserve these IPs for the Harvester cluster. Make sure these are outside
   # the range of DHCP so they don't get served out by the DHCP server
   vip:
-    ip: 10.{{ user_id }}.{{ cluster_id }}.10
+    ip: 10.{{ namespace_id }}.{{ cluster_id }}.10
     mode: DHCP
-    mac: 50:50:0a:{{ '%02x' % user_id|int }}:{{ '%02x' % cluster_id|int }}:0a
+    mac: 50:50:0a:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:0a
   cluster:{% for i in range(node_number|int) %}
-    - ip: 10.{{ user_id }}.{{ cluster_id }}.{{ i + 11 }}
-      mac: 50:50:0a:{{ '%02x' % user_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
-      mac_second: 50:50:0b:{{ '%02x' % user_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
+    - ip: 10.{{ namespace_id }}.{{ cluster_id }}.{{ i + 11 }}
+      mac: 50:50:0a:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
+      mac_second: 50:50:0b:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
       vagrant_interface: ens6
       mgmt_interface: ens7
 {%- endfor %}
@@ -96,4 +96,4 @@ harvester_node_config:
   # disk size for each node
   disk_size: {{ disk_size }}
 harvester_cluster:
-  name_suffix: {{ user_id }}-{{ cluster_id }}
+  name_suffix: {{ namespace_id }}-{{ cluster_id }}

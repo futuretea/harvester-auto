@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    images.sh user_id cluster_id namespace
+    images.sh namespace_id cluster_id namespace
 HELP
 }
 
@@ -14,10 +14,10 @@ if [ $# -lt 3 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 namespace=$3
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
