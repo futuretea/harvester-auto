@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _pr2c user_id cluster_id harvester_prs installer_prs harvester_config_url reuse_built_iso
+    _pr2c namespace_id cluster_id harvester_prs installer_prs harvester_config_url reuse_built_iso
 HELP
 }
 
@@ -14,13 +14,13 @@ if [ $# -lt 4 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 harvester_prs=$3
 installer_prs=$4
 harvester_config_url=$5
 reuse_built_iso=$6
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 source _util.sh
@@ -40,7 +40,7 @@ if [ "${reuse_built_iso}" != "true" ];then
 fi
 
 host_ip=$(hostname -I | awk '{print $1}')
-bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${default_node_number}" "${namespace_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
 
 echo "harvester/harvester PRs: ${harvester_prs}" > "${version_file}"
 echo "harvester/harvester-installer PRs: ${installer_prs}" >> "${version_file}"

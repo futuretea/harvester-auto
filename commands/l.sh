@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    cs.sh user_id
+    cs.sh namespace_id
 HELP
 }
 
@@ -14,10 +14,10 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 
 source _config.sh
 
 set +e
-ls "${workspace_root}" | grep "harvester-${user_id}" | awk -F "-" '{print $3}'
+ls "${workspace_root}" | grep "harvester-${namespace_id}" | awk -F "-" '{print $3}'
 set -e

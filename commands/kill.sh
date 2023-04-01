@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    kill.sh user_id cluster_id job
+    kill.sh namespace_id cluster_id job
 HELP
 }
 
@@ -27,13 +27,13 @@ if [ $# -lt 3 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 job=$3
 
 source _config.sh
 source _ui_config.sh
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 case ${job} in
 "2c")
@@ -43,7 +43,7 @@ pid_file="${logs_dir}/${cluster_name}.pid"
 pid_file="${logs_dir}/${cluster_name}-patch.pid"
   ;;
 "2ui")
-pid_file="${ui_logs_dir}/${user_id}.pid"
+pid_file="${ui_logs_dir}/${namespace_id}.pid"
   ;;
 *)
 echo "invalid job type"

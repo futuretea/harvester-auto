@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    v2c.sh user_id cluster_id harvester_version
+    v2c.sh namespace_id cluster_id harvester_version
 HELP
 }
 
@@ -14,11 +14,11 @@ if [ $# -lt 3 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 harvester_version=$3
 harvester_config_url=$4
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 log_file="${logs_dir}/${cluster_name}.log"
@@ -30,7 +30,7 @@ if [[ -f ${pid_file} ]];then
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_v2c.sh "${user_id}" "${cluster_id}" "${harvester_version}" "${harvester_config_url}">"${log_file}" 2>&1 &
+nohup ./_v2c.sh "${namespace_id}" "${cluster_id}" "${harvester_version}" "${harvester_config_url}">"${log_file}" 2>&1 &
 echo "$!" > "${pid_file}"
 
 echo "got"

@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    status.sh user_id cluster_id
+    status.sh namespace_id cluster_id
 HELP
 }
 
@@ -14,9 +14,9 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 

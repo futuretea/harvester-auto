@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _v2c user_id cluster_id harvester_version harvester_config_url
+    _v2c namespace_id cluster_id harvester_version harvester_config_url
 HELP
 }
 
@@ -14,11 +14,11 @@ if [ $# -lt 3 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 harvester_version=$3
 harvester_config_url=$4
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 
@@ -30,7 +30,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-bash -x ./_create-harvester.sh "${default_iso_download_url}" "${harvester_version}" "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+bash -x ./_create-harvester.sh "${default_iso_download_url}" "${harvester_version}" "${default_node_number}" "${namespace_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
 
 echo "${harvester_version}" > "${version_file}"
 echo "${harvester_config_url}" >> "${version_file}"

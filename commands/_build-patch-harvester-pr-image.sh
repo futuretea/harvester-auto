@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    _build-patch-harvester-pr-image user_id cluster_id repo_name repo_prs
+    _build-patch-harvester-pr-image namespace_id cluster_id repo_name repo_prs
 HELP
 }
 
@@ -14,11 +14,11 @@ if [ $# -lt 4 ]; then
     exit 1
 fi
 
-user_id=$1
+namespace_id=$1
 cluster_id=$2
 repo_name=$3
 repo_prs=$4
-cluster_name="harvester-${user_id}-${cluster_id}"
+cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 # pwd: commands
 source _config.sh
