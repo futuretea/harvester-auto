@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    cs.sh namespace_id
+    l.sh namespace_id
 HELP
 }
 
@@ -18,6 +18,14 @@ namespace_id=$1
 
 source _config.sh
 
-set +e
-ls "${workspace_root}" | grep "harvester-${namespace_id}" | awk -F "-" '{print $3}'
-set -e
+echo "ID DESCRIPTION"
+for folder in "${workspace_root}"/*; do
+    if [ -d "$folder" ] && [[ "$folder" == "${workspace_root}/harvester-${namespace_id}-"* ]]; then
+        awk -F "-" '{printf $3"  "}' <<< "$folder"
+        if [ -f "${folder}/_desc" ]; then
+          cat "${folder}/_desc"
+        else
+          echo "N/A"
+        fi
+    fi
+done
