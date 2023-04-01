@@ -28,6 +28,7 @@ source _util.sh
 fmt_harvester_prs=$(sym2dash "${harvester_prs}")
 fmt_installer_prs=$(sym2dash "${installer_prs}")
 
+version_file="${logs_dir}/${cluster_name}.version"
 pid_file="${logs_dir}/${cluster_name}.pid"
 cleanup() {
   rm -rf "${pid_file}"
@@ -40,3 +41,7 @@ fi
 
 host_ip=$(hostname -I | awk '{print $1}')
 bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${default_node_number}" "${user_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+
+echo "harvester/harvester PRs: ${harvester_prs}" > "${version_file}"
+echo "harvester/harvester-installer PRs: ${installer_prs}" >> "${version_file}"
+echo "harvester configuration URL: ${harvester_config_url}" >> "${version_file}"
