@@ -304,6 +304,28 @@ func main() {
 	}
 	bot.Command("version", versionDefinition)
 
+	// command name
+	nameDefinition := &slacker.CommandDefinition{
+		Description:       "Show/Set Harvester name",
+		Examples:          []string{"name"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			name := request.StringParam("name", "")
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./name.sh %d %d %s", namespaceID, clusterID, name)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("name {name}", nameDefinition)
+
 	// command settings
 	settingsDefinition := &slacker.CommandDefinition{
 		Description:       "Show Harvester settings",

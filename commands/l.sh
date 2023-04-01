@@ -18,12 +18,12 @@ namespace_id=$1
 
 source _config.sh
 
-echo "ID DESCRIPTION"
+echo "ID NAME"
 for folder in "${workspace_root}"/*; do
     if [ -d "$folder" ] && [[ "$folder" == "${workspace_root}/harvester-${namespace_id}-"* ]]; then
         awk -F "-" '{printf $3"  "}' <<< "$folder"
-        if [ -f "${folder}/_desc" ]; then
-          cat "${folder}/_desc"
+        if [ -f "${folder}/_name" ]; then
+          cat "${folder}/_name"
         else
           echo "N/A"
         fi
