@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/shomali11/slacker"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -34,6 +35,8 @@ func init() {
 	if err := viper.Unmarshal(&conf); err != nil {
 		panic(fmt.Errorf("unable to decode into struct, %w", err))
 	}
+	go dynamicConfig()
+
 	// log
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetLevel(logrus.WarnLevel)
@@ -41,6 +44,15 @@ func init() {
 	for envName, envValue := range conf.Slack.Envs {
 		os.Setenv(envName, envValue)
 	}
+}
+
+func dynamicConfig() {
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		if err := viper.Unmarshal(&conf); err != nil {
+			panic(fmt.Errorf("unable to decode into struct, %w", err))
+		}
+	})
 }
 
 func getUserContext(userName string) *ctx.Context {
