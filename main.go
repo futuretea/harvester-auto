@@ -88,6 +88,19 @@ func main() {
 	}
 	bot.Command("ping", pingDefinition)
 
+	// command l
+	lDefinition := &slacker.CommandDefinition{
+		Description:       "List Harvester clusters",
+		Examples:          []string{"l"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			bashCommand := fmt.Sprintf("./l.sh %d", userID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("l", lDefinition)
+
 	// command c
 	clusterDefinition := &slacker.CommandDefinition{
 		Description:       "Show/Set Current Harvester cluster",
@@ -214,6 +227,25 @@ func main() {
 		},
 	}
 	bot.Command("url", urlDefinition)
+
+	// command status
+	statusDefinition := &slacker.CommandDefinition{
+		Description:       "Show Harvester cluster Status",
+		Examples:          []string{"status"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userID, _ := getUserIDByUserName(botCtx.Event().UserName)
+			userContext := getUserContext(userID)
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./status.sh %d %d", userID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("status", statusDefinition)
 
 	// command version
 	versionDefinition := &slacker.CommandDefinition{
