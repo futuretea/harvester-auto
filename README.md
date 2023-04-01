@@ -173,47 +173,79 @@ Send `help` to the Slack app to get the help message
 
 #### Commands
 - help - help
+
 - ping - Ping! `*`
   > Example: ping
+
 - c `clusterID` - Show/Set Current Harvester cluster `*`
   > Example: c (show current cluster id)
+
   > Example: c 1 (set current cluster id to 1)
+
 - pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or checkout branches, always build ISO `*`
   > Example: pr2c 0 0
+
 - pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c `*`
   > Example: pr2cNoBuild 0 0
+
 - v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
   > Example: v2c v1.1
+
 - log `lineNumber` - Tail Harvester cluster logs `*`
   > Example: log
+
   > Example: log 100
+
 - url - Show Harvester cluster URLs `*`
   > Example: url
+
 - version - Show Harvester version `*`
   > Example: version
+
 - settings - Show Harvester settings `*`
   > Example: settings
+
 - kubeconfig - Show Harvester cluster kubeconfig content `*`
   > Example: kubeconfig
+
 - sshconfig - Show ssh config for connecting `*`
   > Example: sshconfig
+
 - destroy - Destroy Harvester cluster nodes `*`
   > Example: destroy
+
 - history `historyNumber` - Show history `*`
   > Example: history
+
   > Example: history 100
+
 - virsh `command` `args` - virsh command warpper `*`
   > Example: virsh list
-- ps - Show Harvester cluster status `*`
+
+- ps - Show running jobs `*`
   > Example: ps
+
+- kill - Kill running job `*`
+  > Example: kill 2c
+
+  > Example: kill 2pt
+
+  > Example: kill 2ui
+
 - pr2ui `uiPRs` - Build Harvester Dashboard `*`
   > Example: pr2ui 0
+
 - log4ui `lineNumber` - Tail Harvester Dashboard Build Logs `*`
   > Example: log4ui
+
   > Example: log4ui 100
+
 - pr2pt `repoName` `repoPRs` - Patch Harvester image after merging PRs or checkout branches, always build image `*`
   > Example: pr2pt harvester 0
+
 - log4pt `lineNumber` - Tail Harvester Patch Logs `*`
   > Example: log4pt
+
   > Example: log4pt 100
+
 `* Authorized users only`
