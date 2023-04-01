@@ -38,7 +38,7 @@ func shellCheck(bashCommand string) bool {
 }
 
 func ClusterNotSetReply(botCtx slacker.BotContext, response slacker.ResponseWriter) {
-	err := errors.New("the current cluster id is not set, run the `cluster {clusterID}` command to set the current cluster id ")
+	err := errors.New("the current cluster id is not set, run the `c {clusterID}` command to set the current cluster id ")
 	response.ReportError(err, ReplyErrorOpt(botCtx))
 }
 
