@@ -56,11 +56,10 @@ jinja2 settings.yml.j2 \
   -D cpu_count=${default_cpu_count} \
   -D memory_size=${default_memory_size} \
   -D disk_size=${default_disk_size} >settings.yml
-bash -x ./setup_harvester.sh
-vagrant status
+
+ansible-playbook ansible/setup_harvester.yml --extra-vars "@settings.yml"
 
 mgmt_ip="10.${namespace_id}.${cluster_id}.10"
-
 harvester_mgmt_url="https://${mgmt_ip}"
 echo "${harvester_mgmt_url}" >harvester_mgmt_url.txt
 printf "harvester mgmt url: %s\n" "${harvester_mgmt_url}"
