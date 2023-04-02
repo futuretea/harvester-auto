@@ -31,6 +31,6 @@ fi
 
 mkdir -p "${logs_dir}"
 nohup ./_v2c.sh "${namespace_id}" "${cluster_id}" "${harvester_version}" "${harvester_config_url}" >"${log_file}" 2>&1 &
-echo "$!" >"${pid_file}"
+echo "$! v2c ${harvester_version} ${harvester_config_url}" >"${pid_file}"
 
 echo "got"
