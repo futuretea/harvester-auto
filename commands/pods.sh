@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    pis.sh namespace_id cluster_id kube_namespace
+    pods.sh namespace_id cluster_id kube_namespace
 HELP
 }
 
@@ -23,7 +23,7 @@ source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
-  kubectl --kubeconfig=${kubeconfig_file} -n ${kube_namespace} get po -o custom-columns='NAME:metadata.name,IMAGES:spec.containers[*].image'
+  kubectl --kubeconfig=${kubeconfig_file} -n ${kube_namespace} get po -o wide
 else
   echo "kubeconfig not found"
 fi
