@@ -184,7 +184,7 @@ func main() {
 
 	// command status
 	statusDefinition := &slacker.CommandDefinition{
-		Description:       "Show Harvester cluster Status",
+		Description:       "Show Harvester cluster status",
 		Examples:          []string{"status"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
@@ -227,7 +227,7 @@ func main() {
 	// command name
 	nameDefinition := &slacker.CommandDefinition{
 		Description:       "Show/Set Harvester name",
-		Examples:          []string{"name"},
+		Examples:          []string{"name", "name test-cluster"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			name := request.StringParam("name", "")
@@ -270,7 +270,7 @@ func main() {
 	// command podImages
 	pisDefinition := &slacker.CommandDefinition{
 		Description:       "Show Pod Images",
-		Examples:          []string{"pis"},
+		Examples:          []string{"pis", "pis cattle-system"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			kubeNamespace := request.StringParam("namespace", "harvester-system")
@@ -289,10 +289,32 @@ func main() {
 	}
 	bot.Command("pis {namespace}", pisDefinition)
 
+	// command pods
+	podsDefinition := &slacker.CommandDefinition{
+		Description:       "kubectl get pod",
+		Examples:          []string{"pods", "pods cattle-system"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			kubeNamespace := request.StringParam("kubeNamespace", "harvester-system")
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./pods.sh %d %d %s", namespaceID, clusterID, kubeNamespace)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pods {kubeNamespace}", podsDefinition)
+
 	// command vms
 	vmsDefinition := &slacker.CommandDefinition{
 		Description:       "kubectl get vm",
-		Examples:          []string{"vms"},
+		Examples:          []string{"vms", "vms harvester-public"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			kubeNamespace := request.StringParam("kubeNamespace", "default")
@@ -412,7 +434,7 @@ func main() {
 	// command log
 	logDefinition := &slacker.CommandDefinition{
 		Description:       "Tail Job logs",
-		Examples:          []string{"log 2c", "log 2c 100"},
+		Examples:          []string{"log 2c", "log 2c 100", "log 2pt", "log 2pt 100", "log 2ui", "log 2ui 100", "log sc", "log sc 100"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -564,7 +586,7 @@ func main() {
 	// command scale
 	scaleDefinition := &slacker.CommandDefinition{
 		Description:       "Scale Harvester nodes",
-		Examples:          []string{"scale"},
+		Examples:          []string{"scale 2"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			nodeNumber := request.IntegerParam("nodeNumber", 1)

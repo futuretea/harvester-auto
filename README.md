@@ -201,32 +201,50 @@ Send `help` to the Slack app to get the help message
 - ping - Ping! `*`
   > Example: ping
 
+- history `historyNumber` - Show history `*`
+  > Example: history
+
+  > Example: history 100
+
+- l - List Harvester clusters `*`
+  > Example: l
+
 - c `clusterID` - Show/Set Current Harvester cluster `*`
   > Example: c (show current cluster id)
 
   > Example: c 1 (set current cluster id to 1)
 
-- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or
-  checkout branches, always build ISO `*`
-  > Example: pr2c 0 0
-
-- pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or
-  branches, but use the built ISO from pr2c `*`
-  > Example: pr2cNoBuild 0 0
-
-- v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
-  > Example: v2c v1.1
-
-- log `lineNumber` - Tail Harvester cluster logs `*`
-  > Example: log
-
-  > Example: log 100
+- status - Show Harvester cluster status `*`
+  > Example: status
 
 - url - Show Harvester cluster URLs `*`
   > Example: url
 
 - version - Show Harvester version `*`
   > Example: version
+
+- name `name` - Show/Set Harvester name `*`
+  > Example: name
+
+  > Example: name test-cluster
+
+- settings - Show Harvester settings `*`
+  > Example: settings
+
+- pis `kubeNamespace` - Show Pod Images `*`
+  > Example: pis
+
+  > Example: pis cattle-system
+
+- pods  `kubeNamespace` - Show Pods `*`
+  > Example: pods
+
+  > Example: pods cattle-system
+
+- vms  `kubeNamespace` - Show VMs `*`
+  > Example: vms
+
+  > Example: vms harvester-public
 
 - settings - Show Harvester settings `*`
   > Example: settings
@@ -240,38 +258,56 @@ Send `help` to the Slack app to get the help message
 - destroy - Destroy Harvester cluster nodes `*`
   > Example: destroy
 
-- history `historyNumber` - Show history `*`
-  > Example: history
-
-  > Example: history 100
-
 - virsh `command` `args` - virsh command warpper `*`
   > Example: virsh list
 
 - ps - Show running jobs `*`
   > Example: ps
 
-- kill - Kill running job `*`
+- log `job` `lineNumber` - Tail Job logs `*`
+  > Example: log 2c
+
+  > Example: log 2c 100
+
+  > Example: log 2ui
+
+  > Example: log 2ui 100
+
+  > Example: log 2pt
+
+  > Example: log 2pt 100
+
+  > Example: log sc
+
+  > Example: log sc 100
+
+- kill `job` - Kill running job `*`
   > Example: kill 2c
 
   > Example: kill 2pt
 
   > Example: kill 2ui
 
+  > Example: kill sc
+
+- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or
+  checkout branches, always build ISO `*`
+  > Example: pr2c 0 0
+
+- pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or
+  branches, but use the built ISO from pr2c `*`
+  > Example: pr2cNoBuild 0 0
+
+- v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
+  > Example: v2c v1.1.1
+
+- scale `nodeNumber` - Scale Harvester nodes *
+  > Example: scale 2
+
 - pr2ui `uiPRs` - Build Harvester Dashboard `*`
   > Example: pr2ui 0
 
-- log4ui `lineNumber` - Tail Harvester Dashboard Build Logs `*`
-  > Example: log4ui
-
-  > Example: log4ui 100
-
 - pr2pt `repoName` `repoPRs` - Patch Harvester image after merging PRs or checkout branches, always build image `*`
   > Example: pr2pt harvester 0
-
-- log4pt `lineNumber` - Tail Harvester Patch Logs `*`
-  > Example: log4pt
-
-  > Example: log4pt 100
 
 `* Authorized users only`

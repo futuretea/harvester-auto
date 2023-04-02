@@ -23,7 +23,7 @@ source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
-  kubectl --kubeconfig=${kubeconfig_file} get vm -n ${kube_namespace}
+  kubectl --kubeconfig=${kubeconfig_file} -n ${kube_namespace} get vm
 else
   echo "kubeconfig not found"
 fi
