@@ -100,6 +100,31 @@ func main() {
 	}
 	bot.Command("ping", pingDefinition)
 
+	// command history
+	historyDefinition := &slacker.CommandDefinition{
+		Description:       "Show history",
+		Examples:          []string{"history", "history 10"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			userContext := getUserContext(userName)
+			historyNumber := request.IntegerParam("historyNumber", 20)
+			historyLen := len(userContext.History)
+			var text string
+			if historyLen > historyNumber {
+				text = strings.Join(userContext.History[historyLen-historyNumber:], "\n")
+			} else {
+				if historyLen == 0 {
+					text = "N/A"
+				} else {
+					text = strings.Join(userContext.History, "\n")
+				}
+			}
+			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
+		},
+	}
+	bot.Command("history {historyNumber}", historyDefinition)
+
 	// command l
 	lDefinition := &slacker.CommandDefinition{
 		Description:       "List Harvester clusters",
@@ -135,111 +160,6 @@ func main() {
 		},
 	}
 	bot.Command("c {clusterID}", clusterDefinition)
-
-	// command pr2c
-	pr2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create a Harvester cluster after merging PRs or checkout branches, always build ISO",
-		Examples:          []string{"pr2c 0 0"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			if user.Mode != config.ModeRW {
-				util.NoPermissionReply(botCtx, response)
-				return
-			}
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			harvesterPRs := request.StringParam("harvesterPRs", "0")
-			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
-			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, false)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
-
-	// command pr2cNoBuild
-	pr2cNoBuildDefinition := &slacker.CommandDefinition{
-		Description:       "Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c",
-		Examples:          []string{"pr2cNoBuild 0 0"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			if user.Mode != config.ModeRW {
-				util.NoPermissionReply(botCtx, response)
-				return
-			}
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			harvesterPRs := request.StringParam("harvesterPRs", "0")
-			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
-			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, true)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("pr2cNoBuild {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cNoBuildDefinition)
-
-	// command v2c
-	v2cDefinition := &slacker.CommandDefinition{
-		Description:       "Create a Harvester cluster after downloading the ISO",
-		Examples:          []string{"v2c v1.1"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			if user.Mode != config.ModeRW {
-				util.NoPermissionReply(botCtx, response)
-				return
-			}
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			harvesterVersion := request.StringParam("harvesterVersion", "0")
-			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
-			bashCommand := fmt.Sprintf("./v2c.sh %d %d %s %s", namespaceID, clusterID, harvesterVersion, harvesterConfigURL)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
-
-	// command log
-	log4cDefinition := &slacker.CommandDefinition{
-		Description:       "Tail Harvester cluster logs",
-		Examples:          []string{"log4c", "log4c 100"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./log4c.sh %d %d %d", namespaceID, clusterID, lineNumber)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("log4c {lineNumber}", log4cDefinition)
 
 	// command url
 	urlDefinition := &slacker.CommandDefinition{
@@ -325,50 +245,6 @@ func main() {
 		},
 	}
 	bot.Command("name {name}", nameDefinition)
-
-	// command scale
-	scaleDefinition := &slacker.CommandDefinition{
-		Description:       "Scale Harvester nodes",
-		Examples:          []string{"scale"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			nodeNumber := request.IntegerParam("nodeNumber", 1)
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			bashCommand := fmt.Sprintf("./scale.sh %d %d %d", namespaceID, clusterID, nodeNumber)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("scale {nodeNumber}", scaleDefinition)
-
-	// command log4sc
-	log4scDefinition := &slacker.CommandDefinition{
-		Description:       "Tail Harvester cluster scale logs",
-		Examples:          []string{"log4sc", "log4sc 100"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./log4sc.sh %d %d %d", namespaceID, clusterID, lineNumber)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("log4sc {lineNumber}", log4scDefinition)
 
 	// command settings
 	settingsDefinition := &slacker.CommandDefinition{
@@ -502,31 +378,6 @@ func main() {
 	}
 	bot.Command("destroy", destroyDefinition)
 
-	// command history
-	historyDefinition := &slacker.CommandDefinition{
-		Description:       "Show history",
-		Examples:          []string{"history", "history 10"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			userContext := getUserContext(userName)
-			historyNumber := request.IntegerParam("historyNumber", 20)
-			historyLen := len(userContext.History)
-			var text string
-			if historyLen > historyNumber {
-				text = strings.Join(userContext.History[historyLen-historyNumber:], "\n")
-			} else {
-				if historyLen == 0 {
-					text = "N/A"
-				} else {
-					text = strings.Join(userContext.History, "\n")
-				}
-			}
-			logrus.Error(response.Reply(text, util.ReplyOpt(botCtx)))
-		},
-	}
-	bot.Command("history {historyNumber}", historyDefinition)
-
 	// command virsh
 	virshDefinition := &slacker.CommandDefinition{
 		Description:       "virsh command warpper",
@@ -557,6 +408,39 @@ func main() {
 		},
 	}
 	bot.Command("ps", psDefinition)
+
+	// command log
+	logDefinition := &slacker.CommandDefinition{
+		Description:       "Tail Job logs",
+		Examples:          []string{"log 2c", "log 2c 100"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			clusterID := userContext.GetClusterID()
+			job := request.StringParam("job", "")
+			switch job {
+			case "2c", "2pt", "sc":
+				if clusterID == 0 {
+					util.ClusterNotSetReply(botCtx, response)
+					return
+				}
+			case "2ui":
+			case "":
+				response.ReportError(errors.New("missing job type"), util.ReplyErrorOpt(botCtx))
+				return
+			default:
+				response.ReportError(errors.New("invalid job type"), util.ReplyErrorOpt(botCtx))
+				return
+			}
+			lineNumber := request.IntegerParam("lineNumber", 20)
+			bashCommand := fmt.Sprintf("./log.sh %d %d %s %d", namespaceID, clusterID, job, lineNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("log {job} {lineNumber}", logDefinition)
 
 	// command kill
 	killDefinition := &slacker.CommandDefinition{
@@ -594,6 +478,115 @@ func main() {
 	}
 	bot.Command("kill {job}", killDefinition)
 
+	// command pr2c
+	pr2cDefinition := &slacker.CommandDefinition{
+		Description:       "Create a Harvester cluster after merging PRs or checkout branches, always build ISO",
+		Examples:          []string{"pr2c 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, false)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2c {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cDefinition)
+
+	// command pr2cNoBuild
+	pr2cNoBuildDefinition := &slacker.CommandDefinition{
+		Description:       "Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c",
+		Examples:          []string{"pr2cNoBuild 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./pr2c.sh %d %d %s %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, harvesterConfigURL, true)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2cNoBuild {harvesterPRs} {harvesterInstallerPRs} {harvesterConfigURL}", pr2cNoBuildDefinition)
+
+	// command v2c
+	v2cDefinition := &slacker.CommandDefinition{
+		Description:       "Create a Harvester cluster after downloading the ISO",
+		Examples:          []string{"v2c v1.1"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterVersion := request.StringParam("harvesterVersion", "0")
+			harvesterConfigURL := request.StringParam("harvesterConfigURL", "")
+			bashCommand := fmt.Sprintf("./v2c.sh %d %d %s %s", namespaceID, clusterID, harvesterVersion, harvesterConfigURL)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
+
+	// command scale
+	scaleDefinition := &slacker.CommandDefinition{
+		Description:       "Scale Harvester nodes",
+		Examples:          []string{"scale"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			nodeNumber := request.IntegerParam("nodeNumber", 1)
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./scale.sh %d %d %d", namespaceID, clusterID, nodeNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("scale {nodeNumber}", scaleDefinition)
+
 	// command pr2pt
 	pr2ptDefinition := &slacker.CommandDefinition{
 		Description:       "Patch Harvester image after merging PRs or checkout branches, always build image",
@@ -621,28 +614,6 @@ func main() {
 	}
 	bot.Command("pr2pt {repoName} {repoPRs}", pr2ptDefinition)
 
-	// command log4pt
-	log4ptDefinition := &slacker.CommandDefinition{
-		Description:       "Tail Harvester Patch Logs",
-		Examples:          []string{"log4pt", "log4pt 100"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			userContext := getUserContext(userName)
-			namespaceID := user.NamespaceID
-			clusterID := userContext.GetClusterID()
-			if clusterID == 0 {
-				util.ClusterNotSetReply(botCtx, response)
-				return
-			}
-			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./log4pt.sh %d %d %d", namespaceID, clusterID, lineNumber)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("log4pt {lineNumber}", log4ptDefinition)
-
 	// command pr2ui
 	pr2uiDefinition := &slacker.CommandDefinition{
 		Description:       "Build Harvester Dashboard",
@@ -658,22 +629,6 @@ func main() {
 		},
 	}
 	bot.Command("pr2ui {uiPRs}", pr2uiDefinition)
-
-	// command log4ui
-	log4uiDefinition := &slacker.CommandDefinition{
-		Description:       "Tail Harvester Dashboard Build Logs",
-		Examples:          []string{"log4ui", "log4ui 100"},
-		AuthorizationFunc: authorizationFunc,
-		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			userName := botCtx.Event().UserName
-			user, _ := getUserByUserName(userName)
-			namespaceID := user.NamespaceID
-			lineNumber := request.IntegerParam("lineNumber", 20)
-			bashCommand := fmt.Sprintf("./log4ui.sh %d %d", namespaceID, lineNumber)
-			util.Shell2Reply(botCtx, response, bashCommand)
-		},
-	}
-	bot.Command("log4ui {lineNumber}", log4uiDefinition)
 
 	// bot run
 	c, cancel := context.WithCancel(context.Background())
