@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     pr2c.sh namespace_id cluster_id harvester_prs installer_prs harvester_config_url reuse_built_iso
 HELP
 }
 
 if [ $# -lt 4 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -26,13 +26,13 @@ source _config.sh
 log_file="${logs_dir}/${cluster_name}.log"
 pid_file="${logs_dir}/${cluster_name}.pid"
 
-if [[ -f ${pid_file} ]];then
+if [[ -f ${pid_file} ]]; then
   echo "other instance running"
   exit 0
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_pr2c.sh "${namespace_id}" "${cluster_id}" "${harvester_prs}" "${installer_prs}" "${harvester_config_url}" "${reuse_built_iso}">"${log_file}" 2>&1 &
-echo "$! pr2c ${harvester_prs} ${installer_prs} ${harvester_config_url} ${reuse_built_iso}" > "${pid_file}"
+nohup ./_pr2c.sh "${namespace_id}" "${cluster_id}" "${harvester_prs}" "${installer_prs}" "${harvester_config_url}" "${reuse_built_iso}" >"${log_file}" 2>&1 &
+echo "$! pr2c ${harvester_prs} ${installer_prs} ${harvester_config_url} ${reuse_built_iso}" >"${pid_file}"
 
 echo "got"

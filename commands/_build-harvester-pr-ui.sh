@@ -3,7 +3,7 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     _build-harvester-pr-ui ui_prs
 HELP
@@ -29,11 +29,11 @@ cd dashboard
 # pwd: TEMPDIR/dashboard
 
 prs="${ui_prs}"
-if [[ ${prs} != "0" ]];then
+if [[ ${prs} != "0" ]]; then
   # prepare code
-  IFS=',' read -ra prs_arr <<< "${prs}"
+  IFS=',' read -ra prs_arr <<<"${prs}"
   if [[ ${#prs_arr[@]} -eq 1 ]]; then
-    if [[ "${prs}" =~ ^[0-9]+$ ]];then
+    if [[ "${prs}" =~ ^[0-9]+$ ]]; then
       fetch_checkout_pr "${prs}"
     else
       fetch_checkout_fork "dashboard" "${prs}"
@@ -41,7 +41,7 @@ if [[ ${prs} != "0" ]];then
   else
     git checkout -b "pr-${fmt_ui_prs}"
     for i in "${prs_arr[@]}"; do
-      if [[ "${i}" =~ ^[0-9]+$ ]];then
+      if [[ "${i}" =~ ^[0-9]+$ ]]; then
         fetch_merge_pr "${i}"
       else
         fetch_merge_fork "dashboard" "${i}"
@@ -76,7 +76,7 @@ yarn build-pkg "${plugin_name}"
 
 # upload plugin
 plugin_output_target="${ui_plugin_output_target}/${fmt_ui_prs}"
-ossutil cp -f -r  "./dist-pkg/${plugin_name}-${plugin_version}/" "${plugin_output_target}/${plugin_name}-${plugin_version}/" --meta x-oss-object-acl:public-read
+ossutil cp -f -r "./dist-pkg/${plugin_name}-${plugin_version}/" "${plugin_output_target}/${plugin_name}-${plugin_version}/" --meta x-oss-object-acl:public-read
 
 # clean
 rm -rf "${TEMPDIR}"

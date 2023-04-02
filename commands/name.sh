@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     name.sh namespace_id cluster_id description
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -23,7 +23,7 @@ source _config.sh
 workspace_cluster="${workspace_root}/${cluster_name}"
 
 if [ -n "${name}" ]; then
-  echo "${name}" > "${workspace_cluster}/_name"
+  echo "${name}" >"${workspace_cluster}/_name"
   echo "done"
 else
   if [ -f "${workspace_cluster}/_name" ]; then

@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     images.sh namespace_id cluster_id namespace
 HELP
 }
 
 if [ $# -lt 3 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -22,8 +22,8 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
-if [[ -f "${kubeconfig_file}" ]];then
-    kubectl --kubeconfig=${kubeconfig_file} -n ${namespace} get po -o custom-columns='NAME:metadata.name,IMAGES:spec.containers[*].image'
+if [[ -f "${kubeconfig_file}" ]]; then
+  kubectl --kubeconfig=${kubeconfig_file} -n ${namespace} get po -o custom-columns='NAME:metadata.name,IMAGES:spec.containers[*].image'
 else
   echo "kubeconfig not found"
 fi

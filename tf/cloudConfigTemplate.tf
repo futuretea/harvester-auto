@@ -2,7 +2,7 @@ resource "kubernetes_config_map" "password" {
   metadata {
     name      = "password"
     namespace = "harvester-public"
-    labels = {
+    labels    = {
       "harvesterhci.io/cloud-init-template" : "user"
     }
   }
@@ -22,7 +22,7 @@ resource "kubernetes_config_map" "docker-rancher" {
   metadata {
     name      = "docker-rancher"
     namespace = "harvester-public"
-    labels = {
+    labels    = {
       "harvesterhci.io/cloud-init-template" : "user"
     }
   }

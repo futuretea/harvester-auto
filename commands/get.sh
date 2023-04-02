@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     get.sh namespace_id cluster_id args
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -22,8 +22,8 @@ shift 2
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
-if [[ -f "${kubeconfig_file}" ]];then
-    kubectl --kubeconfig=${kubeconfig_file} get $@
+if [[ -f "${kubeconfig_file}" ]]; then
+  kubectl --kubeconfig=${kubeconfig_file} get $@
 else
   echo "kubeconfig not found"
 fi

@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     sshconfig.sh namespace_id cluster_id
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -21,7 +21,7 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 source _config.sh
 version_file="${logs_dir}/${cluster_name}.version"
 
-if [ ! -f "${version_file}" ];then
+if [ ! -f "${version_file}" ]; then
   echo "N/A"
   exit 0
 fi
@@ -42,8 +42,8 @@ Host ${cluster_name}-pxe-server
     proxyJump harvester-auto-host
 EOF
 
-for i in $(seq 1 "${default_node_number}");do
-cat <<EOF
+for i in $(seq 1 "${default_node_number}"); do
+  cat <<EOF
 # password defaults to ${default_node_password}
 Host ${cluster_name}-node-${i}
     hostname 10.${namespace_id}.${cluster_id}.1${i}

@@ -3,7 +3,7 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     _build-harvester-pr-iso harvester_prs installer_prs
 HELP
@@ -30,7 +30,7 @@ replace_installer_prs() {
   chmod +x "${output_file}"
 }
 
-if [[ ${installer_prs} != "0" ]];then
+if [[ ${installer_prs} != "0" ]]; then
   replace_installer_prs _build-iso-with-pr.sh.tpl "${TEMPDIR}/build-iso-with-pr"
   cp _util.sh "${TEMPDIR}"
 fi
@@ -43,11 +43,11 @@ cd harvester
 # pwd: TEMPDIR/harvester
 
 prs="${harvester_prs}"
-if [[ ${prs} != "0" ]];then
+if [[ ${prs} != "0" ]]; then
   # prepare code
-  IFS=',' read -ra prs_arr <<< "${prs}"
+  IFS=',' read -ra prs_arr <<<"${prs}"
   if [[ ${#prs_arr[@]} -eq 1 ]]; then
-    if [[ "${prs}" =~ ^[0-9]+$ ]];then
+    if [[ "${prs}" =~ ^[0-9]+$ ]]; then
       fetch_checkout_pr "${prs}"
     else
       fetch_checkout_fork "harvester" "${prs}"
@@ -55,7 +55,7 @@ if [[ ${prs} != "0" ]];then
   else
     git checkout -b "pr-${fmt_harvester_prs}"
     for i in "${prs_arr[@]}"; do
-      if [[ "${i}" =~ ^[0-9]+$ ]];then
+      if [[ "${i}" =~ ^[0-9]+$ ]]; then
         fetch_merge_pr "${i}"
       else
         fetch_merge_fork "harvester" "${i}"
@@ -67,13 +67,13 @@ fi
 # build image
 export REPO=${REPO:-"${default_image_repo}"}
 export PUSH=true
-if [[ ! -d ".docker" ]];then
+if [[ ! -d ".docker" ]]; then
   cp ~/.docker . -r
 fi
 make
 
 # build iso
-if [[ ${installer_prs} != "0" ]];then
+if [[ ${installer_prs} != "0" ]]; then
   mv "${TEMPDIR}/build-iso-with-pr" scripts/
   cp "${TEMPDIR}/_util.sh" scripts/
   RKE2_IMAGE_REPO=${rke2_image_repo} make build-iso-with-pr

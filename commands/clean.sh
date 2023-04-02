@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     clean.sh 
 HELP
 }
 
 if [ $# -lt 0 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 docker images | grep harvester | grep -v none | awk '{print "docker rmi "$1":"$2}' | bash

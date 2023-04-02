@@ -3,6 +3,7 @@
 Create a Harvester Cluster with a single slack command.
 
 ## Features
+
 - [x] Multi-Repo
 - [x] Multi-Branch
 - [x] Multi-User
@@ -27,6 +28,7 @@ Create a Harvester Cluster with a single slack command.
 ### Ubuntu
 
 #### Vagrant Libvirt
+
 ```bash
 sudo apt purge vagrant-libvirt
 sudo apt-mark hold vagrant-libvirt
@@ -35,40 +37,52 @@ sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant
 ```
 
 #### Docker
+
 ```bash
 curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
 sudo systemctl enable --now docker
 ```
 
 #### Proxy
-Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
+
+Since the Harvester nodes created use a private network, all are only accessible on the host node. In order to access
+the Harvester UI remotely and use kubectl to manage the cluster, running a socks5 proxy server on the host
+
 ```bash
 # refer to https://github.com/serjs/socks5-server
 sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
 ```
 
 #### Nginx
-Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files under `/var/www/html`.
+
+Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files
+under `/var/www/html`.
+
 ```bash
 sudo apt install -y nginx
 sudo systemctl enable --now nginx
 ```
 
 #### Harbor
+
 - Refer to the documentation https://goharbor.io/ to install Harbor
 - create a `rancher` project
 - docker login
+
 ```bash
 docker login <Harbor domain>
 ```
 
 #### Dnsmasq
+
 - Refer to the documentation https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/ to install dnsmasq
 
 #### Nodejs
+
 - Refer to the documentation https://computingforgeeks.com/install-node-js-14-on-ubuntu-debian-linux/ to install nodejs
 
 #### Tools
+
 ```bash
 sudo apt install -y ansible sshpass jq
 sudo pip install jinja2-cli
@@ -94,13 +108,16 @@ sudo apt update && sudo apt install terraform
 Refer to https://github.com/shomali11/slacker#preparing-your-slack-app
 
 ### Clone
+
 ```bash
 git clone https://github.com/futuretea/harvester-auto.git
 cd harvester-auto
 ```
 
 ### Configure
+
 Change the dns nameserver address and image repo configurations in `./commands/_config.sh`
+
 ```bash
 cd commands
 cp _config.sh.example _config.sh
@@ -109,6 +126,7 @@ cd -
 ```
 
 Fill in the Slack app token and user configurations in `./configs/config.yaml`
+
 ```bash
 cd configs
 cp config.yaml.example config.yaml
@@ -117,6 +135,7 @@ cd -
 ```
 
 You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
+
 ```bash
 sudo cp configs/ngxin.conf.example /etc/nginx/nginx.conf
 sudo vim /etc/nginx/nginx.conf
@@ -125,17 +144,20 @@ sudo systemctl restart nginx
 ```
 
 ### Build
+
 ```bash
 make
 mv ./bin/harvester-auto .
 ```
 
 ### Run for testing
+
 ```bash
 ./harvester-auto
 ```
 
 ### Run in background
+
 ```bash
 cat > /tmp/harvester-auto.service <<EOF
 [Unit]
@@ -159,6 +181,7 @@ sudo systemctl enable --now harvester-auto
 ```
 
 ### Update
+
 ```bash
 git pull
 make
@@ -172,6 +195,7 @@ sudo systemctl start harvester-auto
 Send `help` to the Slack app to get the help message
 
 #### Commands
+
 - help - help
 
 - ping - Ping! `*`
@@ -182,10 +206,12 @@ Send `help` to the Slack app to get the help message
 
   > Example: c 1 (set current cluster id to 1)
 
-- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or checkout branches, always build ISO `*`
+- pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or
+  checkout branches, always build ISO `*`
   > Example: pr2c 0 0
 
-- pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c `*`
+- pr2cNoBuild `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster based on PRs or
+  branches, but use the built ISO from pr2c `*`
   > Example: pr2cNoBuild 0 0
 
 - v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *

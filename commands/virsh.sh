@@ -3,27 +3,27 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     virsh.sh command args
 HELP
 }
 
 function string_in_list() {
-    local string="$1"
-    shift
-    local list=("$@")
-    for item in "${list[@]}"; do
-        if [[ "$item" == "$string" ]]; then
-            return 0
-        fi
-    done
-    return 1
+  local string="$1"
+  shift
+  local list=("$@")
+  for item in "${list[@]}"; do
+    if [[ "$item" == "$string" ]]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 if [ $# -lt 1 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 command=$1
@@ -36,7 +36,7 @@ if [[ -z ${command} ]]; then
 fi
 
 if string_in_list "${command}" "${allowed_commands[@]}"; then
-    virsh "${command}" $@
+  virsh "${command}" $@
 else
-    echo "${command} is not allowed"
+  echo "${command} is not allowed"
 fi

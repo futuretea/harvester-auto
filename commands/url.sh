@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     url.sh namespace_id cluster_id
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -39,12 +39,12 @@ if [[ -f "${harvester_mgmt_url_file}" ]]; then
   harvester_longhorn_url=${harvester_mgmt_url}/dashboard/c/local/longhorn
   echo "Harvester Longhorn URL(need proxy): ${harvester_longhorn_url}"
 
-  if [ -n "${nfs_root_dir}" ];then
+  if [ -n "${nfs_root_dir}" ]; then
     nfs_cluster_dir="${nfs_root_dir}/${cluster_name}"
-    if [ ! -d "${nfs_cluster_dir}" ];then
-        mkdir -p "${nfs_cluster_dir}"
-        chown -R nobody:nogroup "${nfs_cluster_dir}"
-        chmod -R 777 "${nfs_cluster_dir}"
+    if [ ! -d "${nfs_cluster_dir}" ]; then
+      mkdir -p "${nfs_cluster_dir}"
+      chown -R nobody:nogroup "${nfs_cluster_dir}"
+      chmod -R 777 "${nfs_cluster_dir}"
     fi
     echo "NFS Backup Target URL: nfs://${host_ip}:${nfs_cluster_dir}"
   fi
