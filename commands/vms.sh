@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    get.sh namespace_id cluster_id args
+    get.sh namespace_id cluster_id kube_namespace
 HELP
 }
 
@@ -16,14 +16,14 @@ fi
 
 namespace_id=$1
 cluster_id=$2
+kube_namespace=$3
 cluster_name="harvester-${namespace_id}-${cluster_id}"
-shift 2
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
-  kubectl --kubeconfig=${kubeconfig_file} get $@
+  kubectl --kubeconfig=${kubeconfig_file} get vm -n ${kube_namespace}
 else
   echo "kubeconfig not found"
 fi
