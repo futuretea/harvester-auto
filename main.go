@@ -348,6 +348,28 @@ func main() {
 	}
 	bot.Command("scale {nodeNumber}", scaleDefinition)
 
+	// command log4sc
+	log4scDefinition := &slacker.CommandDefinition{
+		Description:       "Tail Harvester cluster scale logs",
+		Examples:          []string{"log4sc", "log4sc 100"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			lineNumber := request.IntegerParam("lineNumber", 20)
+			bashCommand := fmt.Sprintf("./log4sc.sh %d %d %d", namespaceID, clusterID, lineNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("log4sc {lineNumber}", log4scDefinition)
+
 	// command settings
 	settingsDefinition := &slacker.CommandDefinition{
 		Description:       "Show Harvester settings",
