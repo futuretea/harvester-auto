@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     _build-patch-harvester-pr-image namespace_id cluster_id repo_name repo_prs
 HELP
 }
 
 if [ $# -lt 4 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -38,11 +38,11 @@ cd "${repo_name}"
 # pwd: TEMPDIR/${repo_name}
 
 prs="${repo_prs}"
-if [[ ${prs} != "0" ]];then
+if [[ ${prs} != "0" ]]; then
   # prepare code
-  IFS=',' read -ra prs_arr <<< "${prs}"
+  IFS=',' read -ra prs_arr <<<"${prs}"
   if [[ ${#prs_arr[@]} -eq 1 ]]; then
-    if [[ "${prs}" =~ ^[0-9]+$ ]];then
+    if [[ "${prs}" =~ ^[0-9]+$ ]]; then
       fetch_checkout_pr "${prs}"
     else
       fetch_checkout_fork "${repo_name}" "${prs}"
@@ -50,7 +50,7 @@ if [[ ${prs} != "0" ]];then
   else
     git checkout -b "pr-${fmt_repo_prs}"
     for i in "${prs_arr[@]}"; do
-      if [[ "${i}" =~ ^[0-9]+$ ]];then
+      if [[ "${i}" =~ ^[0-9]+$ ]]; then
         fetch_merge_pr "${i}"
       else
         fetch_merge_fork "${repo_name}" "${i}"

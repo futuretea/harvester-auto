@@ -3,7 +3,7 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     update.sh 
 HELP

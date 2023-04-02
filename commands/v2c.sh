@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     v2c.sh namespace_id cluster_id harvester_version
 HELP
 }
 
 if [ $# -lt 3 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -24,13 +24,13 @@ source _config.sh
 log_file="${logs_dir}/${cluster_name}.log"
 pid_file="${logs_dir}/${cluster_name}.pid"
 
-if [[ -f ${pid_file} ]];then
+if [[ -f ${pid_file} ]]; then
   echo "other instance running"
   exit 0
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_v2c.sh "${namespace_id}" "${cluster_id}" "${harvester_version}" "${harvester_config_url}">"${log_file}" 2>&1 &
-echo "$!" > "${pid_file}"
+nohup ./_v2c.sh "${namespace_id}" "${cluster_id}" "${harvester_version}" "${harvester_config_url}" >"${log_file}" 2>&1 &
+echo "$!" >"${pid_file}"
 
 echo "got"

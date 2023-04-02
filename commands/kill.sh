@@ -3,13 +3,13 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     kill.sh namespace_id cluster_id job
 HELP
 }
 
-kill_job(){
+kill_job() {
   local pid_file=$1
   local pid
   pid=$(awk '{print $1}' "${pid_file}")
@@ -23,8 +23,8 @@ kill_job(){
 }
 
 if [ $# -lt 3 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -37,21 +37,21 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 case ${job} in
 "2c")
-pid_file="${logs_dir}/${cluster_name}.pid"
+  pid_file="${logs_dir}/${cluster_name}.pid"
   ;;
 "2pt")
-pid_file="${logs_dir}/${cluster_name}-patch.pid"
+  pid_file="${logs_dir}/${cluster_name}-patch.pid"
   ;;
 "2ui")
-pid_file="${ui_logs_dir}/${namespace_id}.pid"
+  pid_file="${ui_logs_dir}/${namespace_id}.pid"
   ;;
 *)
-echo "invalid job type"
-exit 0
+  echo "invalid job type"
+  exit 0
   ;;
 esac
 
-if [ -f "${pid_file}" ];then
+if [ -f "${pid_file}" ]; then
   kill_job "${pid_file}"
   echo "done"
 else

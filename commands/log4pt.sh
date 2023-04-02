@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     log4pt.sh namespace_id cluster_id num
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -22,9 +22,8 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 source _config.sh
 log_file="${logs_dir}/${cluster_name}-patch.log"
 
-if [[ -f ${log_file} ]];then
-	tail -n "${num}" "${log_file}"
+if [[ -f ${log_file} ]]; then
+  tail -n "${num}" "${log_file}"
 else
-	echo "N/A"
+  echo "N/A"
 fi
-

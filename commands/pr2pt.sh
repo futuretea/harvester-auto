@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     pr2pt.sh namespace_id cluster_id repo_name repo_prs
 HELP
 }
 
 if [ $# -lt 4 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
@@ -24,13 +24,13 @@ source _config.sh
 log_file="${logs_dir}/${cluster_name}-patch.log"
 pid_file="${logs_dir}/${cluster_name}-patch.pid"
 
-if [[ -f ${pid_file} ]];then
+if [[ -f ${pid_file} ]]; then
   echo "other job running"
   exit 0
 fi
 
 mkdir -p "${logs_dir}"
 nohup ./_pr2pt.sh "${namespace_id}" "${cluster_id}" "${repo_name}" "${repo_prs}" >"${log_file}" 2>&1 &
-echo "$! pr2pt ${repo_name} ${repo_prs}" > "${pid_file}"
+echo "$! pr2pt ${repo_name} ${repo_prs}" >"${pid_file}"
 
 echo "got"

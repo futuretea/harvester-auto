@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     _pr2ui namespace_id ui_prs
 HELP
 }
 
 if [ $# -lt 2 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1

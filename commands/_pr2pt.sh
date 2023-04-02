@@ -3,15 +3,15 @@
 set -eou pipefail
 
 usage() {
-    cat <<HELP
+  cat <<HELP
 USAGE:
     _pr2pt namespace_id cluster_id repo_name repo_prs
 HELP
 }
 
 if [ $# -lt 4 ]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 namespace_id=$1
