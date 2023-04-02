@@ -40,7 +40,7 @@ if [ "${reuse_built_iso}" != "true" ]; then
 fi
 
 host_ip=$(hostname -I | awk '{print $1}')
-bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${default_node_number}" "${namespace_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+bash -x ./_create-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${namespace_id}" "${cluster_id}" "${harvester_config_url}"
 
 echo "harvester/harvester PRs: ${harvester_prs}" >"${version_file}"
 echo "harvester/harvester-installer PRs: ${installer_prs}" >>"${version_file}"

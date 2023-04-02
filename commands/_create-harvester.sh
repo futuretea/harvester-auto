@@ -5,25 +5,21 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    _create-harvester.sh harvester_url harvester_version node_number namespace_id cluster_id cpu_count memory_size disk_size harvester_config_url
-    _create-harvester.sh https://releases.rancher.com/harvester master 2 1 1 8 16384 150G
+    _create-harvester.sh harvester_url harvester_version namespace_id cluster_id harvester_config_url
+    _create-harvester.sh https://releases.rancher.com/harvester master 1 1
 HELP
 }
 
-if [ $# -lt 8 ]; then
+if [ $# -lt 4 ]; then
   usage
   exit 1
 fi
 
 harvester_url=$1
 harvester_version=$2
-node_number=$3
-namespace_id=$4
-cluster_id=$5
-cpu_count=$6
-memory_size=$7
-disk_size=$8
-harvester_config_url=$9
+namespace_id=$3
+cluster_id=$4
+harvester_config_url=${5:-""}
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
@@ -51,14 +47,15 @@ cd "${git_repo_name}"
 jinja2 settings.yml.j2 \
   -D harvester_url=${harvester_url} \
   -D harvester_version=${harvester_version} \
-  -D harvester_config_url=${harvester_config_url} \
-  -D dns_nameserver=${default_dns_nameserver} \
-  -D node_number=${node_number} \
   -D namespace_id=${namespace_id} \
   -D cluster_id=${cluster_id} \
-  -D cpu_count=${cpu_count} \
-  -D memory_size=${memory_size} \
-  -D disk_size=${disk_size} >settings.yml
+  -D harvester_config_url=${harvester_config_url} \
+  -D dns_nameserver=${default_dns_nameserver} \
+  -D create_node_number=${default_create_node_number} \
+  -D node_number=${default_node_number} \
+  -D cpu_count=${default_cpu_count} \
+  -D memory_size=${default_memory_size} \
+  -D disk_size=${default_disk_size} >settings.yml
 bash -x ./setup_harvester.sh
 vagrant status
 

@@ -30,7 +30,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-bash -x ./_create-harvester.sh "${default_iso_download_url}" "${harvester_version}" "${default_node_number}" "${namespace_id}" "${cluster_id}" "${default_cpu_count}" "${default_memory_size}" "${default_disk_size}" "${harvester_config_url}"
+bash -x ./_create-harvester.sh "${default_iso_download_url}" "${harvester_version}" "${namespace_id}" "${cluster_id}" "${harvester_config_url}"
 
 echo "${harvester_version}" >"${version_file}"
 echo "${harvester_config_url}" >>"${version_file}"
