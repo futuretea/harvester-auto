@@ -16,8 +16,10 @@ kill_job() {
   set +e
   pids=$(pstree -p "${pid}" | awk -F '[()]' '{printf $2" "}')
   for i in $(seq 1 10); do
-    kill -TERM ${pids}
-    sleep 1
+    if [ -n "${pids}" ]; then
+      kill -TERM ${pids}
+      sleep 1
+    fi
   done
   set -e
 }
