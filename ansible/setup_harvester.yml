@@ -49,7 +49,7 @@
     vars:
       name_suffix: "{{ harvester_cluster.name_suffix }}"
       node_number: "{{ item }}"
-    with_sequence: 0-{{ harvester_cluster_nodes|int - 1 }}
+    with_sequence: 1-{{ harvester_cluster_create_nodes|int }}
 
   - name: create "Installation Completed" message
     shell: >

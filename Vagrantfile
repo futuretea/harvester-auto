@@ -25,7 +25,7 @@ dhcp_server_ip = @settings['harvester_network_config']['dhcp_server']['ip']
 cpu_count = @settings['harvester_node_config']['cpu']
 memory_size = @settings['harvester_node_config']['memory']
 disk_size = @settings['harvester_node_config']['disk_size']
-cluster_node_index = @settings['harvester_cluster_nodes'] - 1
+cluster_create_node_number = @settings['harvester_cluster_create_nodes']
 name_suffix = @settings['harvester_cluster']['name_suffix']
 network_name = "harvester-#{name_suffix}"
 
@@ -60,16 +60,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  (0..cluster_node_index).each do |node_number|
+  (1..cluster_create_node_number).each do |node_number|
     vm_name = "harvester-#{name_suffix}-#{node_number}"
     config.vm.define vm_name, autostart: true do |harvester_node|
       harvester_node.vm.hostname = "#{vm_name}"
       harvester_node.vm.network 'private_network',
         libvirt__network_name: "#{network_name}",
-        mac: @settings['harvester_network_config']['cluster'][node_number]['mac']
+        mac: @settings['harvester_network_config']['cluster'][node_number-1]['mac']
       harvester_node.vm.network 'private_network',
         libvirt__network_name: "#{network_name}",
-        mac: @settings['harvester_network_config']['cluster'][node_number]['mac_second']
+        mac: @settings['harvester_network_config']['cluster'][node_number-1]['mac_second']
 
       harvester_node.vm.provider :libvirt do |libvirt|
         libvirt.cpu_mode = 'host-passthrough'
