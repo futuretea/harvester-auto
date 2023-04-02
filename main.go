@@ -391,13 +391,13 @@ func main() {
 	}
 	bot.Command("pis {namespace}", pisDefinition)
 
-	// command get
-	getDefinition := &slacker.CommandDefinition{
-		Description:       "kubectl get",
-		Examples:          []string{"get"},
+	// command vms
+	vmsDefinition := &slacker.CommandDefinition{
+		Description:       "kubectl get vm",
+		Examples:          []string{"vms"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			args := request.StringParam("args", "vm -n default -o wide")
+			kubeNamespace := request.StringParam("kubeNamespace", "default")
 			userName := botCtx.Event().UserName
 			user, _ := getUserByUserName(userName)
 			userContext := getUserContext(userName)
@@ -407,11 +407,11 @@ func main() {
 				util.ClusterNotSetReply(botCtx, response)
 				return
 			}
-			bashCommand := fmt.Sprintf("./get.sh %d %d %s", namespaceID, clusterID, args)
+			bashCommand := fmt.Sprintf("./vms.sh %d %d %s", namespaceID, clusterID, kubeNamespace)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
-	bot.Command("get {args}", getDefinition)
+	bot.Command("vms {kubeNamespace}", vmsDefinition)
 
 	// command kubeconfig
 	kubeconfigDefinition := &slacker.CommandDefinition{
