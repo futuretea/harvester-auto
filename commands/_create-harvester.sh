@@ -70,7 +70,14 @@ sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o
 cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - >"${kubeconfig_file}"
 
 # test
-kubectl --kubeconfig=${kubeconfig_file} get no
+while true; do
+  if (kubectl --kubeconfig=${kubeconfig_file} -n harvester-system get deploy harvester > /dev/null 2>&1); then
+    break
+  fi
+  sleep 3
+done || true
+
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Available deploy harvester
 
 # init cluster use terraform
 if [[ -d "tf" ]]; then
