@@ -30,7 +30,22 @@ cleanup() {
 
 trap cleanup EXIT
 
-bash -x ./_create-harvester.sh "${default_iso_download_url}" "${harvester_version}" "${namespace_id}" "${cluster_id}" "${harvester_config_url}"
+case "${harvester_version}" in
+  master)
+    iso_download_url="${default_iso_download_head_url}"
+    ;;
+  v1.1)
+    iso_download_url="${default_iso_download_head_url}"
+    ;;
+  v1.0)
+    iso_download_url="${default_iso_download_head_url}"
+    ;;
+  *)
+    iso_download_url="${default_iso_download_release_url}"
+    ;;
+esac
+
+bash -x ./_create-harvester.sh "${iso_download_url}" "${harvester_version}" "${namespace_id}" "${cluster_id}" "${harvester_config_url}"
 
 echo "${harvester_version}" >"${version_file}"
 echo "${harvester_config_url}" >>"${version_file}"
