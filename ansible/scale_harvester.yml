@@ -1,0 +1,31 @@
+---
+- name: Scaling Harvester Node
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+  - name: create "Scaling Harvester Node" message
+    shell: >
+      figlet "Scaling Harvester Node Number to {{ node_number }}" 2>/dev/null || echo "Scaling Harvester Node Number to {{ node_number }}"
+    register: figlet_result
+
+  - name: print "Scaling Harvester Node" message
+    debug:
+      msg: "{{ figlet_result.stdout }}"
+
+  - name: boot Harvester nodes
+    include: boot_harvester_node.yml
+    vars:
+      name_suffix: "{{ harvester_cluster.name_suffix }}"
+      node_number: "{{ item }}"
+    with_sequence: 1-{{ harvester_cluster_create_nodes|int }}
+
+  - name: create "Installation Completed" message
+    shell: >
+      figlet "Installation Completed" 2>/dev/null || echo "Installation Completed"
+    register: figlet_result
+
+  - name: print "Installation Completed"
+    debug:
+      msg: "{{ figlet_result.stdout }}"

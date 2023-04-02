@@ -326,6 +326,28 @@ func main() {
 	}
 	bot.Command("name {name}", nameDefinition)
 
+	// command scale
+	scaleDefinition := &slacker.CommandDefinition{
+		Description:       "Scale Harvester nodes",
+		Examples:          []string{"scale"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			nodeNumber := request.IntegerParam("nodeNumber", 1)
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./scale.sh %d %d %d", namespaceID, clusterID, nodeNumber)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("scale {nodeNumber}", scaleDefinition)
+
 	// command settings
 	settingsDefinition := &slacker.CommandDefinition{
 		Description:       "Show Harvester settings",
@@ -517,7 +539,7 @@ func main() {
 	// command kill
 	killDefinition := &slacker.CommandDefinition{
 		Description:       "Kill running job",
-		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui"},
+		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui", "kill sc"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -531,7 +553,7 @@ func main() {
 			clusterID := userContext.GetClusterID()
 			job := request.StringParam("job", "")
 			switch job {
-			case "2c", "2pt":
+			case "2c", "2pt", "sc":
 				if clusterID == 0 {
 					util.ClusterNotSetReply(botCtx, response)
 					return

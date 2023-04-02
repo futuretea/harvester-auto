@@ -22,6 +22,7 @@ source _ui_config.sh
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 pid_file="${logs_dir}/${cluster_name}.pid"
 patch_pid_file="${logs_dir}/${cluster_name}-patch.pid"
+scale_pid_file="${logs_dir}/${cluster_name}-scale.pid"
 ui_pid_file="${ui_logs_dir}/${namespace_id}.pid"
 
 if [[ -f ${pid_file} ]]; then
@@ -40,4 +41,10 @@ if [[ -f ${ui_pid_file} ]]; then
   echo "2ui: $(cat "${ui_pid_file}")"
 else
   echo "2ui: N/A"
+fi
+
+if [[ -f ${scale_pid_file} ]]; then
+  echo "sc: $(cat "${scale_pid_file}")"
+else
+  echo "sc: N/A"
 fi

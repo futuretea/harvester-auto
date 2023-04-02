@@ -45,6 +45,9 @@ case ${job} in
 "2ui")
   pid_file="${ui_logs_dir}/${namespace_id}.pid"
   ;;
+"sc")
+  pid_file="${logs_dir}/${cluster_name}-scale.pid"
+  ;;
 *)
   echo "invalid job type"
   exit 0
