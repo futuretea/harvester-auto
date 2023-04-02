@@ -25,7 +25,7 @@ log_file="${logs_dir}/${cluster_name}.log"
 pid_file="${logs_dir}/${cluster_name}.pid"
 
 if [[ -f ${pid_file} ]]; then
-  echo "other instance running"
+  echo "other job running"
   exit 0
 fi
 
