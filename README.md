@@ -284,6 +284,10 @@ Send `help` to the Slack app to get the help message
 
   > Example: log sc 100
 
+  > Example: log up
+
+  > Example: log up 100
+
 - kill `job` - Kill running job `*`
   > Example: kill 2c
 
@@ -292,6 +296,8 @@ Send `help` to the Slack app to get the help message
   > Example: kill 2ui
 
   > Example: kill sc
+
+  > Example: kill up
 
 - pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or
   checkout branches, always build ISO `*`
@@ -303,6 +309,17 @@ Send `help` to the Slack app to get the help message
 
 - v2c `harvesterVersion` `harvesterConfigURL` - Create a Harvester cluster after downloading the ISO *
   > Example: v2c v1.1.1
+
+- pr2up `harvesterPRs` `harvesterInstallerPRs` - Upgrade a Harvester cluster after merging PRs or
+  checkout branches, always build ISO `*`
+  > Example: pr2up 0 0
+
+- pr2upNoBuild `harvesterPRs` `harvesterInstallerPRs` - Upgrade a Harvester cluster based on PRs or
+  branches, but use the built ISO from pr2c `*`
+  > Example: pr2upNoBuild 0 0
+
+- v2up `harvesterVersion` - Create a Harvester cluster after downloading the ISO *
+  > Example: v2up v1.1.2-rc5
 
 - scale `nodeNumber` - Scale Harvester nodes *
   > Example: scale 2

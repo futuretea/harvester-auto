@@ -18,3 +18,5 @@ default_disk_size=150G
 default_node_password="p@ssword"
 nfs_root_dir="/mnt/nfs"
 rke2_image_repo=""
+default_upgrade_from_version="v1.1.1"
+default_upgrade_to_version="v1.1.2-head"
