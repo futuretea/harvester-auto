@@ -11,8 +11,8 @@ default_dns_nameserver="8.8.4.4"
 default_image_repo="reg.mydomain.com/rancher"
 default_node_number=4
 default_create_node_number=1
-default_cpu_count=8
-default_memory_size=16384
+default_cpu_count=16
+default_memory_size=32768
 default_disk_size=150G
 # should keep the same with the default password in settings.yml.j2
 default_node_password="p@ssword"
