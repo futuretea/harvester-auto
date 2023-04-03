@@ -23,8 +23,15 @@ install:
   management_interface:
     interfaces:
     - name: {{ mgmt_interface_name }}  # The management interface name
-    method: dhcp
+    default_route: true
+    method: static
+    ip: {{ ip }}
+    subnet_mask: {{ subnet_mask }}
+    gateway: {{ gateway }}
+    bond_options:
+      mode: balance-tlb
+      miimon: 100
   device: /dev/vda       # The target disk to install
   iso_url: http://{{ pxe_server_ip }}/harvester/harvester-amd64.iso
 #  tty: ttyS1,115200n8   # For machines without a VGA console
-  tty: ttyS0
+#  tty: ttyS0

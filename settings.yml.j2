@@ -46,10 +46,12 @@ harvester_network_config:
   # the range of DHCP so they don't get served out by the DHCP server
   vip:
     ip: 10.{{ namespace_id }}.{{ cluster_id }}.10
-    mode: DHCP
+    mode: static
     mac: 50:50:0a:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:0a
   cluster:{% for i in range(node_number|int) %}
     - ip: 10.{{ namespace_id }}.{{ cluster_id }}.{{ i + 11 }}
+      subnet_mask: 255.255.255.0
+      gateway: 10.{{ namespace_id }}.{{ cluster_id }}.1
       mac: 50:50:0a:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
       mac_second: 50:50:0b:{{ '%02x' % namespace_id|int }}:{{ '%02x' % cluster_id|int }}:{{ '%02x' % (i + 11) }}
       vagrant_interface: ens6

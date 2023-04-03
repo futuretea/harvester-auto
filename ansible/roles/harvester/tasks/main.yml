@@ -16,6 +16,9 @@
     mode: 0640
   vars:
     hostname: "harvester-{{ settings['harvester_cluster']['name_suffix'] }}-1"
+    ip: "{{ settings['harvester_network_config']['cluster'][0]['ip'] }}"
+    subnet_mask: "{{ settings['harvester_network_config']['cluster'][0]['subnet_mask'] }}"
+    gateway: "{{ settings['harvester_network_config']['cluster'][0]['gateway'] }}"
     mgmt_interface_name: "{{ settings['harvester_network_config']['cluster'][0]['mgmt_interface'] }}"
     pxe_server_ip: "{{ pxe_server_ip }}"
 
@@ -84,6 +87,9 @@
     mode: 0640
   vars:
     hostname: "harvester-{{ settings['harvester_cluster']['name_suffix'] }}-{{ item }}"
+    ip: "{{ settings['harvester_network_config']['cluster'][item|int - 1]['ip'] }}"
+    subnet_mask: "{{ settings['harvester_network_config']['cluster'][item|int - 1]['subnet_mask'] }}"
+    gateway: "{{ settings['harvester_network_config']['cluster'][item|int - 1]['gateway'] }}"
     mgmt_interface_name: "{{ settings['harvester_network_config']['cluster'][item|int - 1]['mgmt_interface'] }}"
     pxe_server_ip: "{{ pxe_server_ip }}"
   with_sequence: "start=2 end={{ end_sequence }}"
