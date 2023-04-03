@@ -36,6 +36,9 @@ case ${job} in
 "sc")
   log_file="${logs_dir}/${cluster_name}-scale.log"
   ;;
+"up")
+  log_file="${logs_dir}/${cluster_name}-upgrade.log"
+  ;;
 *)
   echo "invalid job type"
   exit 0

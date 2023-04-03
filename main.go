@@ -434,7 +434,7 @@ func main() {
 	// command log
 	logDefinition := &slacker.CommandDefinition{
 		Description:       "Tail Job logs",
-		Examples:          []string{"log 2c", "log 2c 100", "log 2pt", "log 2pt 100", "log 2ui", "log 2ui 100", "log sc", "log sc 100"},
+		Examples:          []string{"log 2c", "log 2c 100", "log 2pt", "log 2pt 100", "log 2ui", "log 2ui 100", "log sc", "log sc 100", "log up", "log up 100"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -444,7 +444,7 @@ func main() {
 			clusterID := userContext.GetClusterID()
 			job := request.StringParam("job", "")
 			switch job {
-			case "2c", "2pt", "sc":
+			case "2c", "2pt", "sc", "up":
 				if clusterID == 0 {
 					util.ClusterNotSetReply(botCtx, response)
 					return
@@ -467,7 +467,7 @@ func main() {
 	// command kill
 	killDefinition := &slacker.CommandDefinition{
 		Description:       "Kill running job",
-		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui", "kill sc"},
+		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui", "kill sc", "kill up"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -481,7 +481,7 @@ func main() {
 			clusterID := userContext.GetClusterID()
 			job := request.StringParam("job", "")
 			switch job {
-			case "2c", "2pt", "sc":
+			case "2c", "2pt", "sc", "up":
 				if clusterID == 0 {
 					util.ClusterNotSetReply(botCtx, response)
 					return
@@ -582,6 +582,86 @@ func main() {
 		},
 	}
 	bot.Command("v2c {harvesterVersion} {harvesterConfigURL}", v2cDefinition)
+
+	// command pr2up
+	pr2upDefinition := &slacker.CommandDefinition{
+		Description:       "Upgrade a Harvester cluster after merging PRs or checkout branches, always build ISO",
+		Examples:          []string{"pr2up 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2up.sh %d %d %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, false)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2up {harvesterPRs} {harvesterInstallerPRs}", pr2upDefinition)
+
+	// command pr2upNoBuild
+	pr2upNoBuildDefinition := &slacker.CommandDefinition{
+		Description:       "Upgrade a Harvester cluster based on PRs or branches, but use the built ISO from pr2up or pr2c",
+		Examples:          []string{"pr2upNoBuild 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2up.sh %d %d %s %s %t", namespaceID, clusterID, harvesterPRs, harvesterInstallerPRs, true)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2upNoBuild {harvesterPRs} {harvesterInstallerPRs}", pr2upNoBuildDefinition)
+
+	// command v2up
+	v2upDefinition := &slacker.CommandDefinition{
+		Description:       "Upgrade a Harvester cluster after downloading the ISO",
+		Examples:          []string{"v2up v1.1.2-rc5"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			harvesterVersion := request.StringParam("harvesterVersion", "0")
+			bashCommand := fmt.Sprintf("./v2up.sh %d %d %s", namespaceID, clusterID, harvesterVersion)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("v2up {harvesterVersion}", v2upDefinition)
 
 	// command scale
 	scaleDefinition := &slacker.CommandDefinition{

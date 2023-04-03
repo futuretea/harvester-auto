@@ -50,6 +50,9 @@ case ${job} in
 "sc")
   pid_file="${logs_dir}/${cluster_name}-scale.pid"
   ;;
+"up")
+  pid_file="${logs_dir}/${cluster_name}-upgrade.pid"
+  ;;
 *)
   echo "invalid job type"
   exit 0
