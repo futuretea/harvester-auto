@@ -86,6 +86,6 @@ echo "ui-index: ${dashboard_base_url}/index.html"
 echo "plugin-index: ${plugin_base_url}/${plugin_name}-${plugin_version}.umd.min.js"
 
 if [ -n "${slack_webhook_url}" ]; then
-  text="build ui ${ui_prs} finished, ui-index: ${dashboard_base_url}/index.html, plugin-index: ${plugin_base_url}/index.html"
+  text="build ui ${ui_prs} finished, ui-index: ${dashboard_base_url}/index.html, plugin-index: ${plugin_base_url}/${plugin_name}-${plugin_version}.umd.min.js"
   curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
 fi
