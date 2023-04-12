@@ -1,5 +1,5 @@
 ---
-- name: create "Booting Node {{ node_number}}" message
+- name: create "Booting Node {{ node_number }}" message
   shell: >
     figlet "Booting Node {{ node_number }}" 2>/dev/null || echo "Booting Node {{ node_number }}"
   register: figlet_result

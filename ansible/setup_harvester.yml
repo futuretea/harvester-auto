@@ -45,7 +45,7 @@
     delay: 30
 
   - name: boot Harvester nodes
-    include: boot_harvester_node.yml
+    include_tasks: boot_harvester_node.yml
     vars:
       name_suffix: "{{ harvester_cluster.name_suffix }}"
       node_number: "{{ item }}"
