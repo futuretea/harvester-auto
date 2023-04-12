@@ -87,16 +87,16 @@ kubectl --kubeconfig=${kubeconfig_file} -n fleet-local patch managedcharts.manag
 kubectl --kubeconfig=${kubeconfig_file} -n cattle-system rollout restart deploy/system-upgrade-controller
 kubectl --kubeconfig=${kubeconfig_file} -n cattle-system wait --for=condition=Available deploy system-upgrade-controller
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=LogReady Upgrade hvst-upgrade-auto --timeout=10m
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=LogReady Upgrade hvst-upgrade-auto --timeout=30m
 echo "LogReady"
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=ImageReady Upgrade hvst-upgrade-auto --timeout=10m
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=ImageReady Upgrade hvst-upgrade-auto --timeout=30m
 echo "ImageReady"
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=RepoReady Upgrade hvst-upgrade-auto --timeout=10m
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=RepoReady Upgrade hvst-upgrade-auto --timeout=30m
 echo "RepoReady"
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Completed Upgrade hvst-upgrade-auto --timeout=120m
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Completed Upgrade hvst-upgrade-auto --timeout=180m
 echo "Completed"
 
 if [ -n "${slack_webhook_url}" ]; then
