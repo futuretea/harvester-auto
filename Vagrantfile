@@ -77,6 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         libvirt.cpu_mode = 'host-passthrough'
         libvirt.memory = memory_size
         libvirt.cpus = cpu_count
+        libvirt.storage_pool_name = "pool#{node_number}"
         libvirt.storage :file,
           size: disk_size,
           type: 'qcow2',
