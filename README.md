@@ -37,6 +37,7 @@ sudo apt purge vagrant-libvirt
 sudo apt-mark hold vagrant-libvirt
 sudo apt update
 sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
+vagrant plugin install vagrant-libvirt
 ```
 
 #### Docker
@@ -140,7 +141,8 @@ cd -
 You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
 
 ```bash
-sudo cp configs/ngxin.conf.example /etc/nginx/nginx.conf
+cd configs
+sudo cp configs/nginx.conf.example /etc/nginx/nginx.conf
 sudo vim /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl restart nginx
