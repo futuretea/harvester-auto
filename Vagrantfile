@@ -26,6 +26,8 @@ cpu_count = @settings['harvester_node_config']['cpu']
 memory_size = @settings['harvester_node_config']['memory']
 disk_size = @settings['harvester_node_config']['disk_size']
 cluster_create_node_number = @settings['harvester_cluster_create_nodes']
+namespace_id = @settings['harvester_cluster']['namespace_id']
+cluster_id = @settings['harvester_cluster']['cluster_id']
 name_suffix = @settings['harvester_cluster']['name_suffix']
 network_name = "harvester-#{name_suffix}"
 
@@ -64,6 +66,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   (1..cluster_create_node_number).each do |node_number|
     vm_name = "harvester-#{name_suffix}-#{node_number}"
+    storage_pool_id = "#{namespace_id}#{node_number}#{cluster_id}".to_i % 4 + 1
+    storage_pool_name = "pool#{storage_pool_id}"
     config.vm.define vm_name, autostart: true do |harvester_node|
       harvester_node.vm.hostname = "#{vm_name}"
       harvester_node.vm.network 'private_network',
@@ -72,12 +76,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       harvester_node.vm.network 'private_network',
         libvirt__network_name: "#{network_name}",
         mac: @settings['harvester_network_config']['cluster'][node_number-1]['mac_second']
-
       harvester_node.vm.provider :libvirt do |libvirt|
         libvirt.cpu_mode = 'host-passthrough'
         libvirt.memory = memory_size
         libvirt.cpus = cpu_count
-        libvirt.storage_pool_name = "pool#{node_number}"
+        libvirt.storage_pool_name = "#{storage_pool_name}"
         libvirt.storage :file,
           size: disk_size,
           type: 'qcow2',
