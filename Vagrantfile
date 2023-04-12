@@ -80,14 +80,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         libvirt.storage_pool_name = "pool#{node_number}"
         libvirt.storage :file,
           size: disk_size,
-          type: 'qcow2',
+          type: 'raw',
           bus: 'virtio',
           device: 'vda',
           cache: 'none',
           io: 'native'
         libvirt.storage :file,
           size: '10G',
-          type: 'qcow2',
+          type: 'raw',
           bus: 'virtio',
           device: 'vdb',
           cache: 'none',
