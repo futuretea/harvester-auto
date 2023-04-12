@@ -47,8 +47,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     pxe_server.vm.provider :libvirt do |libvirt|
       libvirt.cpu_mode = 'host-passthrough'
-      libvirt.memory = '1024'
-      libvirt.cpus = '1'
+      libvirt.memory = '4096'
+      libvirt.cpus = '4'
 #       libvirt.graphics_type = 'vnc'
 #       libvirt.graphics_ip = "#{dhcp_server_ip}"
     end
