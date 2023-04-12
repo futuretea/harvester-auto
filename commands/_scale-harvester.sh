@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    _scale-harvester.sh namespace_id cluster_id node_number
+    _scale-harvester.sh namespace_id cluster_id spec_node_number
 HELP
 }
 
@@ -16,7 +16,7 @@ fi
 
 namespace_id=$1
 cluster_id=$2
-node_number=$3
+spec_node_number=$3
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
@@ -39,7 +39,7 @@ fi
 # create
 cd "${workspace}"
 
-cat settings.yml | yq e '.harvester_cluster_create_nodes = '"${node_number}"'' >settings.yml.tmp
+cat settings.yml | yq e '.harvester_cluster_create_nodes = '"${spec_node_number}"'' >settings.yml.tmp
 mv settings.yml.tmp settings.yml
 
-ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extra-vars "node_number=${node_number}"
+ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extra-vars "spec_node_number=${spec_node_number}"
