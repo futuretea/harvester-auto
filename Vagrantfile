@@ -80,14 +80,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         libvirt.storage_pool_name = "pool#{node_number}"
         libvirt.storage :file,
           size: disk_size,
-          type: 'raw',
+          type: 'qcow2',
           bus: 'virtio',
           device: 'vda',
           cache: 'none',
           io: 'native'
         libvirt.storage :file,
-          size: '10G',
-          type: 'raw',
+          size: '50G',
+          type: 'qcow2',
           bus: 'virtio',
           device: 'vdb',
           cache: 'none',
@@ -96,7 +96,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         libvirt.boot 'hd'
         libvirt.boot boot_network
         # NOTE: default to UEFI boot. Comment this out for legacy BIOS.
-#         libvirt.loader = '/usr/share/qemu/OVMF.fd'
+        libvirt.loader = '/usr/share/qemu/OVMF.fd'
         libvirt.nic_model_type = 'virtio'
 #         libvirt.graphics_type = 'vnc'
 #         libvirt.graphics_ip = @settings['harvester_network_config']['cluster'][node_number-1]['ip']
