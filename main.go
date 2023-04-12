@@ -669,7 +669,7 @@ func main() {
 		Examples:          []string{"scale 2"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
-			nodeNumber := request.IntegerParam("nodeNumber", 1)
+			specNodeNumber := request.IntegerParam("specNodeNumber", 1)
 			userName := botCtx.Event().UserName
 			user, _ := getUserByUserName(userName)
 			userContext := getUserContext(userName)
@@ -683,11 +683,11 @@ func main() {
 				util.ClusterNotSetReply(botCtx, response)
 				return
 			}
-			bashCommand := fmt.Sprintf("./scale.sh %d %d %d", namespaceID, clusterID, nodeNumber)
+			bashCommand := fmt.Sprintf("./scale.sh %d %d %d", namespaceID, clusterID, specNodeNumber)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
-	bot.Command("scale {nodeNumber}", scaleDefinition)
+	bot.Command("scale {specNodeNumber}", scaleDefinition)
 
 	// command pr2pt
 	pr2ptDefinition := &slacker.CommandDefinition{

@@ -7,7 +7,7 @@
   tasks:
   - name: create "Scaling Harvester Node" message
     shell: >
-      figlet "Scaling Harvester Node Number to {{ node_number }}" 2>/dev/null || echo "Scaling Harvester Node Number to {{ node_number }}"
+      figlet "Scaling Harvester Node Number to {{ spec_node_number }}" 2>/dev/null || echo "Scaling Harvester Node Number to {{ spec_node_number }}"
     register: figlet_result
 
   - name: print "Scaling Harvester Node" message
