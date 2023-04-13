@@ -36,7 +36,7 @@ if [[ -z ${command} ]]; then
 fi
 
 if string_in_list "${command}" "${allowed_commands[@]}"; then
-  virsh "${command}" $@
+  sudo virsh "${command}" $@
 else
   echo "${command} is not allowed"
 fi

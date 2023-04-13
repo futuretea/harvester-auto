@@ -21,5 +21,5 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 source _config.sh
 
 set +e
-virsh list --all | grep "harvester-auto_${cluster_name}"
+sudo virsh list --all | grep "harvester-auto_${cluster_name}"
 set -e
