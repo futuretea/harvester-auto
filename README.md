@@ -19,8 +19,8 @@ Create a Harvester Cluster with a single slack command.
 - [x] Auto-Build-Push-UI
 - [x] Auto-Build-Push-Patch-Image
 - [x] Auto-Notification
+- [x] Auto-Upgrade
 - [ ] Auto-Test
-- [ ] Auto-Upgrade
 
 ## Architecture
 
@@ -320,11 +320,13 @@ Send `help` to the Slack app to get the help message
   branches, but use the built ISO from pr2c `*`
   > Example: pr2upNoBuild 0 0
 
-- v2up `harvesterVersion` - Create a Harvester cluster after downloading the ISO *
+- v2up `harvesterVersion` - Upgrade a Harvester cluster after downloading the ISO *
   > Example: v2up v1.1.2-rc5
 
 - scale `nodeNumber` - Scale Harvester nodes *
   > Example: scale 2
+
+  > Example: scale 3
 
 - pr2ui `uiPRs` - Build Harvester Dashboard `*`
   > Example: pr2ui 0
