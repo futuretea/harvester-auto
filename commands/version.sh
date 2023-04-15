@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    version.sh namespace_id cluster_id num
+    version.sh namespace_id cluster_id
 HELP
 }
 
