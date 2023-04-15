@@ -57,6 +57,12 @@ the Harvester UI remotely and use kubectl to manage the cluster, running a socks
 sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-socks5-proxy
 ```
 
+#### NoVNC
+
+```bash
+sudo snap install novnc
+```
+
 #### Nginx
 
 Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files

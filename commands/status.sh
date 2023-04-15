@@ -29,7 +29,10 @@ for vm in $(sudo virsh -q list --all | awk '{print $2}'); do
     continue
   fi
   vm_no_prefix="${vm#harvester-auto_${cluster_name}-}"
-  port_number=$(sudo virsh vncdisplay "${vm}" | awk -F ":" '{print $2}')
+  vnc_port_suffix=$(sudo virsh vncdisplay "${vm}" | awk -F ":" '{print $2}')
+  vnc_port=$((5900+${vnc_port_suffix}))
+  novnc_port=$((6080+${vnc_port_suffix}))
+  sudo snap set novnc services.n${novnc_port}.listen=${novnc_port} services.n${novnc_port}.vnc=localhost:${vnc_port}
   state=$(sudo virsh domstate "${vm}")
-  echo "${cluster_id}   ${vm_no_prefix}   ${state}   vnc://${host_ip}:${port_number}"
+  echo "${cluster_id}   ${vm_no_prefix}   ${state}   http://${host_ip}:${novnc_port}/vnc.html"
 done

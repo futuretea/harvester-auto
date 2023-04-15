@@ -30,6 +30,13 @@
       state: present
     become: true
 
+  - name: Install novnc
+    snap:
+      name: novnc
+      classic: true
+      state: present
+    become: true
+
   - name: Install vagrant-libvirt
     apt:
       name: "{{ item }}"
