@@ -100,6 +100,6 @@ kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition
 echo "Completed"
 
 if [ -n "${slack_webhook_url}" ]; then
-  text="upgrade cluster ${cluster_id} for user ${namespace_id} started"
+  text="upgrade cluster ${cluster_id} in namespace ${namespace_id} started"
   curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
 fi
