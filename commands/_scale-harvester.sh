@@ -43,3 +43,8 @@ cat settings.yml | yq e '.harvester_cluster_create_nodes = '"${spec_node_number}
 mv settings.yml.tmp settings.yml
 
 ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extra-vars "spec_node_number=${spec_node_number}"
+
+if [ -n "${slack_webhook_url}" ]; then
+  text="scale cluster ${cluster_id} in namespace ${namespace_id} finished"
+  curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
+fi

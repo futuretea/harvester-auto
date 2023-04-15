@@ -38,3 +38,8 @@ rm -f "${log_file}"
 rm -f "${pid_file}"
 rm -f "${version_file}"
 echo "done"
+
+if [ -n "${slack_webhook_url}" ]; then
+  text="destroy cluster ${cluster_id} in namespace ${namespace_id} finished"
+  curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
+fi
