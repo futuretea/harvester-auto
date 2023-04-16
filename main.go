@@ -400,6 +400,81 @@ func main() {
 	}
 	bot.Command("destroy", destroyDefinition)
 
+	// command start
+	startDefinition := &slacker.CommandDefinition{
+		Description:       "Start Harvester cluster nodes",
+		Examples:          []string{"start"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./start.sh %d %d", namespaceID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("start", startDefinition)
+
+	// command stop
+	stopDefinition := &slacker.CommandDefinition{
+		Description:       "Stop Harvester cluster nodes",
+		Examples:          []string{"stop"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./stop.sh %d %d", namespaceID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("stop", stopDefinition)
+
+	// command restart
+	restartDefinition := &slacker.CommandDefinition{
+		Description:       "Restart Harvester cluster nodes",
+		Examples:          []string{"restart"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./restart.sh %d %d", namespaceID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("restart", restartDefinition)
+
 	// command virsh
 	virshDefinition := &slacker.CommandDefinition{
 		Description:       "virsh command warpper",
