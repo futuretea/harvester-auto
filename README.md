@@ -63,6 +63,13 @@ sudo docker run -d --name socks5 --restart=unless-stopped -p 1080:1080 serjs/go-
 sudo snap install novnc
 ```
 
+#### WebSSH
+
+```bash
+# refer to https://github.com/huashengdun/webssh
+sudo docker run -d --name wssh --restart=unless-stopped -p 8888:8888 futuretea/wssh
+```
+
 #### Nginx
 
 Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files
