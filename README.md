@@ -269,6 +269,15 @@ Send `help` to the Slack app to get the help message
 - destroy - Destroy Harvester cluster nodes `*`
   > Example: destroy
 
+- start - Start Harvester cluster nodes `*`
+  > Example: start
+
+- restart - Restart Harvester cluster nodes `*`
+  > Example: restart
+
+- stop - Stop Harvester cluster nodes `*`
+  > Example: stop
+
 - virsh `command` `args` - virsh command warpper `*`
   > Example: virsh list
 
