@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
     cat <<HELP
 USAGE:
-    get-rke2.sh ROOTDIR VERSION
+    get-rke2.sh ROOTDIR VERSION BASEURL
 HELP
 }
 
@@ -16,16 +16,17 @@ fi
 
 ROOTDIR=$1
 VERSION=$2
+BASEURL=${3:-"https://github.com/rancher/rke2/releases/download"}
 
 mkdir -p $ROOTDIR/$VERSION
 cd $ROOTDIR/$VERSION
 
-wget https://github.com/rancher/rke2/releases/download/$VERSION/rke2-images.linux-amd64.tar.zst
-wget https://github.com/rancher/rke2/releases/download/$VERSION/rke2-images.linux-amd64.txt
-wget https://github.com/rancher/rke2/releases/download/$VERSION/rke2-images-multus.linux-amd64.txt
-wget https://github.com/rancher/rke2/releases/download/$VERSION/rke2-images-harvester.linux-amd64.tar.zst
-wget https://github.com/rancher/rke2/releases/download/$VERSION/rke2-images-harvester.linux-amd64.txt
+wget ${BASEURL}/$VERSION/rke2-images.linux-amd64.tar.zst
+wget ${BASEURL}/$VERSION/rke2-images.linux-amd64.txt
+wget ${BASEURL}/$VERSION/rke2-images-multus.linux-amd64.txt
+wget ${BASEURL}/$VERSION/rke2-images-harvester.linux-amd64.tar.zst
+wget ${BASEURL}/$VERSION/rke2-images-harvester.linux-amd64.txt
 
 # verify
-wget https://github.com/rancher/rke2/releases/download/$VERSION/sha256sum-amd64.txt
+wget ${BASEURL}/$VERSION/sha256sum-amd64.txt
 sha256sum -c --ignore-missing sha256sum-amd64.txt
