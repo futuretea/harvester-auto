@@ -44,3 +44,12 @@ sym2dash() {
 get_host_ip() {
   hostname -I | awk '{print $1}'
 }
+
+get_vm_novnc_port() {
+  local vm_name=$1
+  local vnc_port_suffix=$(sudo virsh vncdisplay "${vm_name}" | awk -F ":" '{print $2}')
+  local vnc_port=$((5900+${vnc_port_suffix}))
+  local novnc_port=$((6080+${vnc_port_suffix}))
+  sudo snap set novnc services.n${novnc_port}.listen=${novnc_port} services.n${novnc_port}.vnc=localhost:${vnc_port}
+  echo "${novnc_port}"
+}
