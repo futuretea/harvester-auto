@@ -42,9 +42,9 @@ if [[ -f "${harvester_mgmt_url_file}" ]]; then
   if [ -n "${nfs_root_dir}" ]; then
     nfs_cluster_dir="${nfs_root_dir}/${cluster_name}"
     if [ ! -d "${nfs_cluster_dir}" ]; then
-      mkdir -p "${nfs_cluster_dir}"
-      chown -R nobody:nogroup "${nfs_cluster_dir}"
-      chmod -R 777 "${nfs_cluster_dir}"
+      sudo mkdir -p "${nfs_cluster_dir}"
+      sudo chown -R nobody:nogroup "${nfs_cluster_dir}"
+      sudo chmod -R 777 "${nfs_cluster_dir}"
     fi
     echo "NFS Backup Target URL: nfs://${host_ip}:${nfs_cluster_dir}"
   fi
