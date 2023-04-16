@@ -59,6 +59,11 @@ jinja2 settings.yml.j2 \
 
 ansible-playbook ansible/setup_harvester.yml --extra-vars "@settings.yml"
 
+# set network autostart
+sudo virsh net-autostart "${cluster_name}"
+sudo virsh net-autostart vagrant-libvirt
+
+# get mgmt url
 mgmt_ip="10.${namespace_id}.${cluster_id}.10"
 harvester_mgmt_url="https://${mgmt_ip}"
 echo "${harvester_mgmt_url}" >harvester_mgmt_url.txt
