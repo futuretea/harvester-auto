@@ -475,6 +475,91 @@ func main() {
 	}
 	bot.Command("restart", restartDefinition)
 
+	// command snaps
+	snapsDefinition := &slacker.CommandDefinition{
+		Description:       "List Harvester cluster snapshots",
+		Examples:          []string{"snaps"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			bashCommand := fmt.Sprintf("./snaps.sh %d %d", namespaceID, clusterID)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("snaps", snapsDefinition)
+
+	// command snap
+	snapDefinition := &slacker.CommandDefinition{
+		Description:       "Snapshot Harvester cluster nodes",
+		Examples:          []string{"snap foo"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			snapshotName := request.Param("snapshotName")
+			if snapshotName == "" {
+				response.ReportError(errors.New("missing snapshotName"), util.ReplyErrorOpt(botCtx))
+				return
+			}
+			bashCommand := fmt.Sprintf("./snap.sh %d %d %s", namespaceID, clusterID, snapshotName)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("snap {snapshotName}", snapDefinition)
+
+	// command revert
+	revertDefinition := &slacker.CommandDefinition{
+		Description:       "Revert Harvester cluster nodes",
+		Examples:          []string{"revert foo"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			userContext := getUserContext(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			clusterID := userContext.GetClusterID()
+			if clusterID == 0 {
+				util.ClusterNotSetReply(botCtx, response)
+				return
+			}
+			snapshotName := request.Param("snapshotName")
+			if snapshotName == "" {
+				response.ReportError(errors.New("missing snapshotName"), util.ReplyErrorOpt(botCtx))
+				return
+			}
+			bashCommand := fmt.Sprintf("./revert.sh %d %d %s", namespaceID, clusterID, snapshotName)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("revert {snapshotName}", revertDefinition)
+
 	// command virsh
 	virshDefinition := &slacker.CommandDefinition{
 		Description:       "virsh command warpper",
