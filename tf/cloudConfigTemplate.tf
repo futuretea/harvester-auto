@@ -18,6 +18,30 @@ resource "kubernetes_config_map" "password" {
   }
 }
 
+resource "kubernetes_config_map" "ubuntu-mirror-and-password" {
+  metadata {
+    name      = "ubuntu-mirror-and-password"
+    namespace = "harvester-public"
+    labels    = {
+      "harvesterhci.io/cloud-init-template" : "user"
+    }
+  }
+
+  data = {
+    cloudInit = <<-EOF
+      #cloud-config
+      apt:
+        primary:
+        - arches: [default]
+          uri: ${var.ubuntu_mirror_url}
+      password: password
+      chpasswd:
+        expire: false
+      ssh_pwauth: true
+      EOF
+  }
+}
+
 resource "kubernetes_config_map" "docker-rancher" {
   metadata {
     name      = "docker-rancher"
@@ -30,6 +54,10 @@ resource "kubernetes_config_map" "docker-rancher" {
   data = {
     cloudInit = <<-EOF
       #cloud-config
+      apt:
+        primary:
+        - arches: [default]
+          uri: ${var.ubuntu_mirror_url}
       password: password
       chpasswd:
         expire: false
