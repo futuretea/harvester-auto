@@ -44,7 +44,11 @@ for folder in "${workspace_root}"/*; do
 
     # cluster state
     first_node_name="harvester-auto_${cluster_name}-1"
-    state=$(sudo virsh domstate "${first_node_name}")
+    if grep -q "${first_node_name}" < <(sudo virsh -q list --all); then
+      state=$(sudo virsh domstate "${first_node_name}")
+    else
+      state="N/A"
+    fi
     printf "%s        %s        %s        %s        " "${cluster_id}" "${name}" "${url}" "${state}"
     if [ "${state}" == "running" ]; then
       novnc_port=$(get_vm_novnc_port "${first_node_name}")
