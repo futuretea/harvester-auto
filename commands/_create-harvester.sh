@@ -35,7 +35,7 @@ if [[ -d "${workspace}/.vagrant" ]]; then
     cd "${workspace}"
     vagrant destroy -f
     cd -
-    rm -rf "${workspace_cluster}"
+    rm -rf "${workspace}"
   fi
 fi
 
