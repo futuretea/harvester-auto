@@ -1,18 +1,22 @@
 #!/bin/bash
 set -e
 
-source $(dirname $0)/version
+TOP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." &> /dev/null && pwd )"
+SCRIPTS_DIR="${TOP_DIR}/scripts"
+
+# shellcheck source=/dev/null
+source "${SCRIPTS_DIR}/version"
 # hack
-source $(dirname $0)/_util.sh
+source "${SCRIPTS_DIR}/_util.sh"
 # end
 
-cd $(dirname $0)/..
+cd "${TOP_DIR}"
 
 echo "Start building ISO image"
 
 HARVESTER_INSTALLER_VERSION=master
 
-git clone --branch ${HARVESTER_INSTALLER_VERSION} --single-branch --depth 1 https://github.com/harvester/harvester-installer.git ../harvester-installer
+git clone --branch "${HARVESTER_INSTALLER_VERSION}" --single-branch --depth 1 https://github.com/harvester/harvester-installer.git ../harvester-installer
 
 # hack
 cd ../harvester-installer
@@ -49,5 +53,5 @@ cd ../harvester-installer/scripts
 cd ..
 HARVESTER_DIR=../harvester
 
-mkdir -p ${HARVESTER_DIR}/dist/artifacts
-cp dist/artifacts/* ${HARVESTER_DIR}/dist/artifacts
+mkdir -p "${HARVESTER_DIR}/dist/artifacts"
+cp dist/artifacts/* "${HARVESTER_DIR}/dist/artifacts"

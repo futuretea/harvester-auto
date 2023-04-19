@@ -22,7 +22,7 @@ source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
-  kubectl --kubeconfig=${kubeconfig_file} get settings -ojson | jq -r '.items[] | .metadata.name+":"+(if .value then .value else .default end)'
+  kubectl --kubeconfig="${kubeconfig_file}" get settings -ojson | jq -r '.items[] | .metadata.name+":"+(if .value then .value else .default end)'
 else
   echo "kubeconfig not found"
 fi

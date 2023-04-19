@@ -1,7 +1,7 @@
 variable "ubuntu_image_url" {
-  type        = string
+  type = string
 }
 
 variable "ubuntu_mirror_url" {
-  type        = string
+  type = string
 }

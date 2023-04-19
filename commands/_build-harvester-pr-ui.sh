@@ -70,7 +70,7 @@ ossutil cp -f -r "./dist/${DIR}/" "${dashboard_output_target}/${DIR}/" --meta x-
 
 # build plugin
 plugin_name="harvester"
-plugin_version=$(jq -r '.version' pkg/${plugin_name}/package.json)
+plugin_version=$(jq -r '.version' "pkg/${plugin_name}/package.json")
 plugin_base_url="${ui_plugin_base_url}/${fmt_ui_prs}/${plugin_name}-${plugin_version}"
 yarn build-pkg "${plugin_name}"
 

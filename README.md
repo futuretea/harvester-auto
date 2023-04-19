@@ -104,6 +104,7 @@ docker login <Harbor domain>
 sudo apt install -y ansible sshpass jq
 sudo pip install jinja2-cli
 sudo snap install yq
+sudo snap install task --classic
 # kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
@@ -164,7 +165,7 @@ sudo systemctl restart nginx
 ### Build
 
 ```bash
-make
+task go:build
 mv ./bin/harvester-auto .
 ```
 
@@ -201,11 +202,7 @@ sudo systemctl enable --now harvester-auto
 ### Update
 
 ```bash
-git pull
-make
-sudo systemctl stop harvester-auto
-mv ./bin/harvester-auto .
-sudo systemctl start harvester-auto
+task update
 ```
 
 ### Send commands from slack

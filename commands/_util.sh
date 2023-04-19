@@ -27,7 +27,7 @@ fetch_checkout_fork() {
 fetch_merge_pr() {
   local pr_id=$1
   git fetch origin "pull/${pr_id}/head:pr-${pr_id}"
-  GIT_MERGE_AUTOEDIT=no git merge "pr-${i}"
+  GIT_MERGE_AUTOEDIT=no git merge "pr-${pr_id}"
 }
 
 fetch_checkout_pr() {
@@ -47,9 +47,10 @@ get_host_ip() {
 
 get_vm_novnc_port() {
   local vm_name=$1
-  local vnc_port_suffix=$(sudo virsh vncdisplay "${vm_name}" | awk -F ":" '{print $2}')
-  local vnc_port=$((5900+${vnc_port_suffix}))
-  local novnc_port=$((6080+${vnc_port_suffix}))
-  sudo snap set novnc services.n${novnc_port}.listen=${novnc_port} services.n${novnc_port}.vnc=localhost:${vnc_port}
+  local vnc_port_suffix=
+  vnc_port_suffix=$(sudo virsh vncdisplay "${vm_name}" | awk -F ":" '{print $2}')
+  local vnc_port=$((5900+vnc_port_suffix))
+  local novnc_port=$((6080+vnc_port_suffix))
+  sudo snap set novnc "services.n${novnc_port}.listen=${novnc_port}" "services.n${novnc_port}.vnc=localhost:${vnc_port}"
   echo "${novnc_port}"
 }

@@ -31,7 +31,7 @@ for vm_name in $(sudo virsh -q list --all | awk '{print $2}'); do
     continue
   fi
 
-  node_index="${vm#${cluster_name}-}"
+  node_index="${vm#"${cluster_name}-"}"
   node_ip="10.${namespace_id}.${cluster_id}.1${node_index}"
   state=$(sudo virsh domstate "${vm_name}")
   printf "%s        %s        %s        " "${cluster_id}" "${node_ip}" "${state}"

@@ -20,8 +20,6 @@ ui_prs=$2
 source _ui_config.sh
 source _util.sh
 
-fmt_ui_prs=$(sym2dash "${ui_prs}")
-
 pid_file="${ui_logs_dir}/${namespace_id}.pid"
 cleanup() {
   rm -rf "${pid_file}"

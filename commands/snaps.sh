@@ -25,7 +25,7 @@ for vm_name in $(sudo virsh -q list --all | awk '{print $2}'); do
   if [[ "${vm}" != ${cluster_name}* ]]; then
     continue
   fi
-  node_index="${vm#${cluster_name}-}"
+  node_index="${vm#"${cluster_name}-"}"
   echo "node-${node_index}:"
   sudo virsh snapshot-list --domain "${vm_name}"
 done

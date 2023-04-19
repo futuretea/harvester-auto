@@ -23,7 +23,7 @@ source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
-  kubectl --kubeconfig=${kubeconfig_file} -n ${kube_namespace} get po -o custom-columns='NAME:metadata.name,IMAGES:spec.containers[*].image'
+  kubectl --kubeconfig="${kubeconfig_file}" -n "${kube_namespace}" get po -o custom-columns='NAME:metadata.name,IMAGES:spec.containers[*].image'
 else
   echo "kubeconfig not found"
 fi

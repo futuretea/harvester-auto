@@ -14,10 +14,10 @@ kill_job() {
   local pid
   pid=$(awk '{print $1}' "${pid_file}")
   set +e
-  pids=$(pstree -p "${pid}" | awk -F '[()]' '{printf $2" "}')
-  for i in $(seq 1 10); do
+  pids=$(sudo pstree -p "${pid}" | awk -F '[()]' '{printf $2" "}')
+  for _ in $(seq 1 10); do
     if [ -n "${pids}" ]; then
-      kill -TERM ${pids}
+      echo "${pids}" | xargs -r kill -TERM
       sleep 1
     fi
   done
@@ -45,7 +45,7 @@ case ${job} in
   pid_file="${logs_dir}/${cluster_name}-patch.pid"
   ;;
 "2iso")
-  pid_file="${logs_dir}}/${namespace_id}-iso.pid"
+  pid_file="${logs_dir}/${namespace_id}-iso.pid"
   ;;
 "2ui")
   pid_file="${ui_logs_dir}/${namespace_id}.pid"
