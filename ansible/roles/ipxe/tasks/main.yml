@@ -6,7 +6,7 @@
 
 - name: install ipxe firmwares
   get_url:
-    url: '{{ item }}'
+    url: "{{ item }}"
     dest: /tftpboot/ipxe/
   loop:
     - "http://boot.ipxe.org/ipxe.efi"
