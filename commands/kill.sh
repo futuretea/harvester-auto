@@ -44,6 +44,9 @@ case ${job} in
 "2pt")
   pid_file="${logs_dir}/${cluster_name}-patch.pid"
   ;;
+"2iso")
+  pid_file="${logs_dir}}/${namespace_id}-iso.pid"
+  ;;
 "2ui")
   pid_file="${ui_logs_dir}/${namespace_id}.pid"
   ;;

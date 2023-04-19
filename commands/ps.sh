@@ -22,6 +22,7 @@ source _ui_config.sh
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 pid_file="${logs_dir}/${cluster_name}.pid"
 patch_pid_file="${logs_dir}/${cluster_name}-patch.pid"
+iso_pid_file="${logs_dir}/${namespace_id}-iso.pid"
 upgrade_pid_file="${logs_dir}/${cluster_name}-upgrade.pid"
 scale_pid_file="${logs_dir}/${cluster_name}-scale.pid"
 ui_pid_file="${ui_logs_dir}/${namespace_id}.pid"
@@ -36,6 +37,12 @@ if [[ -f ${patch_pid_file} ]]; then
   echo "2pt: $(cat "${patch_pid_file}")"
 else
   echo "2pt: N/A"
+fi
+
+if [[ -f ${iso_pid_file} ]]; then
+  echo "2iso: $(cat "${iso_pid_file}")"
+else
+  echo "2iso: N/A"
 fi
 
 if [[ -f ${ui_pid_file} ]]; then
