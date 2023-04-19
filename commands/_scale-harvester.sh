@@ -24,6 +24,7 @@ source _config.sh
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
 
+kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 pid_file="${logs_dir}/${cluster_name}-scale.pid"
 cleanup() {
   rm -rf "${pid_file}"
@@ -43,6 +44,16 @@ cat settings.yml | yq e '.harvester_cluster_create_nodes = '"${spec_node_number}
 mv settings.yml.tmp settings.yml
 
 ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extra-vars "spec_node_number=${spec_node_number}"
+
+# test
+while true; do
+  if (kubectl --kubeconfig=${kubeconfig_file} -n harvester-system get deploy harvester > /dev/null 2>&1); then
+    break
+  fi
+  sleep 3
+done || true
+
+kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Available deploy harvester
 
 if [ -n "${slack_webhook_url}" ]; then
   text="scale cluster ${cluster_id} in namespace ${namespace_id} finished"

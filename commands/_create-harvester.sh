@@ -24,11 +24,12 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+version_file="${logs_dir}/${cluster_name}.version"
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
 
-# check exist
+# destroy exist
 if [[ -d "${workspace}/.vagrant" ]]; then
   printf "destroy existing cluster %d\n" "${cluster_id}"
   if [[ -d "${workspace}/.vagrant" ]]; then
@@ -38,6 +39,8 @@ if [[ -d "${workspace}/.vagrant" ]]; then
     rm -rf "${workspace}"
   fi
 fi
+
+rm -f "${version_file}"
 
 # create
 mkdir -p "${workspace_cluster}"
