@@ -99,7 +99,7 @@ if [[ -d "tf" ]]; then
   cd tf
   ln -s "${kubeconfig_file}" local.yaml
   terraform init
-  terraform apply -auto-approve -var "image_url=${default_tf_init_image_url}"
+  terraform apply -auto-approve -var "ubuntu_image_url=${default_tf_init_ubuntu_image_url}" -var "ubuntu_mirror_url=${default_tf_init_ubuntu_mirror_url}"
 fi
 
 if [ -n "${slack_webhook_url}" ]; then
