@@ -30,6 +30,9 @@ case ${job} in
 "2pt")
   log_file="${logs_dir}/${cluster_name}-patch.log"
   ;;
+"2iso")
+  log_file="${logs_dir}/${namespace_id}-iso.log"
+  ;;
 "2ui")
   log_file="${ui_logs_dir}/${namespace_id}.log"
   ;;

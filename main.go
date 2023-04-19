@@ -609,7 +609,7 @@ func main() {
 					util.ClusterNotSetReply(botCtx, response)
 					return
 				}
-			case "2ui":
+			case "2ui", "2iso":
 			case "":
 				response.ReportError(errors.New("missing job type"), util.ReplyErrorOpt(botCtx))
 				return
@@ -627,7 +627,7 @@ func main() {
 	// command kill
 	killDefinition := &slacker.CommandDefinition{
 		Description:       "Kill running job",
-		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui", "kill sc", "kill up"},
+		Examples:          []string{"kill 2c", "kill 2pt", "kill 2ui", "kill sc", "kill up", "kill iso"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			userName := botCtx.Event().UserName
@@ -646,7 +646,7 @@ func main() {
 					util.ClusterNotSetReply(botCtx, response)
 					return
 				}
-			case "2ui":
+			case "2ui", "2iso":
 			case "":
 				response.ReportError(errors.New("missing job type"), util.ReplyErrorOpt(botCtx))
 				return
@@ -659,6 +659,27 @@ func main() {
 		},
 	}
 	bot.Command("kill {job}", killDefinition)
+
+	// command pr2iso
+	pr2isoDefinition := &slacker.CommandDefinition{
+		Description:       "Build Harvester ISO after merging PRs or checkout branches",
+		Examples:          []string{"pr2iso 0 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			namespaceID := user.NamespaceID
+			if user.Mode != config.ModeRW {
+				util.NoPermissionReply(botCtx, response)
+				return
+			}
+			harvesterPRs := request.StringParam("harvesterPRs", "0")
+			harvesterInstallerPRs := request.StringParam("harvesterInstallerPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2iso.sh %d %s %s", namespaceID, harvesterPRs, harvesterInstallerPRs)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2iso {harvesterPRs} {harvesterInstallerPRs}", pr2isoDefinition)
 
 	// command pr2c
 	pr2cDefinition := &slacker.CommandDefinition{
@@ -690,7 +711,7 @@ func main() {
 
 	// command pr2cNoBuild
 	pr2cNoBuildDefinition := &slacker.CommandDefinition{
-		Description:       "Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2c",
+		Description:       "Create a Harvester cluster based on PRs or branches, but use the built ISO from pr2iso/pr2c/pr2up",
 		Examples:          []string{"pr2cNoBuild 0 0"},
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {

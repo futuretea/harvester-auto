@@ -304,6 +304,10 @@ Send `help` to the Slack app to get the help message
 
   > Example: log 2pt 100
 
+  > Example: log 2iso
+
+  > Example: log 2iso 100
+
   > Example: log sc
 
   > Example: log sc 100
@@ -317,11 +321,17 @@ Send `help` to the Slack app to get the help message
 
   > Example: kill 2pt
 
+  > Example: kill 2iso
+
   > Example: kill 2ui
 
   > Example: kill sc
 
   > Example: kill up
+
+- pr2iso `harvesterPRs` `harvesterInstallerPRs` - Build Harvester iso after merging PRs or
+  checkout branches `*`
+  > Example: pr2iso 0 0
 
 - pr2c `harvesterPRs` `harvesterInstallerPRs` `harvesterConfigURL` - Create a Harvester cluster after merging PRs or
   checkout branches, always build ISO `*`
