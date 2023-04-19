@@ -47,13 +47,13 @@ ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extr
 
 # test
 while true; do
-  if (kubectl --kubeconfig=${kubeconfig_file} -n harvester-system get deploy harvester > /dev/null 2>&1); then
+  if (kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system get deploy harvester > /dev/null 2>&1); then
     break
   fi
   sleep 3
 done || true
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Available deploy harvester
+kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
 
 if [ -n "${slack_webhook_url}" ]; then
   text="scale cluster ${cluster_id} in namespace ${namespace_id} finished"

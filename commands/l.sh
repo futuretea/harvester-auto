@@ -24,7 +24,7 @@ echo "Id        Name        URL        State        Console"
 echo "--------------------------------------------------"
 for folder in "${workspace_root}"/*; do
   if [ -d "${folder}" ] && [[ "${folder}" == "${workspace_root}/harvester-${namespace_id}-"* ]]; then
-    cluster_name=${folder#${workspace_root}/}
+    cluster_name=${folder#"${workspace_root}"/}
     cluster_id=$(awk -F "-" '{printf $3}' <<<"${cluster_name}")
 
     # cluster name

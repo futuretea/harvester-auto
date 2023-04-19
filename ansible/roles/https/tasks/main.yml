@@ -6,7 +6,7 @@
 
 - name: generate SSL Key
   command: >
-    openssl req -x509 -nodes -days 365 
+    openssl req -x509 -nodes -days 365
     -config /var/www/openssl.conf
     -keyout /etc/ssl/private/nginx-selfsigned.key
     -out /etc/ssl/certs/nginx-selfsigned.crt
@@ -18,8 +18,8 @@
 
 - name: copy configuration
   copy:
-    src: '{{item}}'
-    dest: '/etc/nginx/snippets/'
+    src: "{{item}}"
+    dest: "/etc/nginx/snippets/"
   loop:
     - self-signed.conf
     - ssl-params.conf

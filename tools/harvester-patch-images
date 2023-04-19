@@ -21,7 +21,8 @@ TARGET_REPO=$1
 TARGET_TAG=${2:-${SOURCE_TAG}}
 
 function patch_harvester() {
-  local tmp_file="$(mktemp)"
+  local tmp_file
+  tmp_file="$(mktemp)"
   cat > "${tmp_file}" <<EOF
 spec:
   values:
@@ -46,7 +47,8 @@ EOF
 }
 
 function patch_harvester_network_controller() {
-  local tmp_file="$(mktemp)"
+  local tmp_file
+  tmp_file="$(mktemp)"
   cat > "${tmp_file}" <<EOF
 spec:
   values:
@@ -71,7 +73,8 @@ EOF
 }
 
 function patch_harvester_load_balancer() {
-  local tmp_file="$(mktemp)"
+  local tmp_file
+  tmp_file="$(mktemp)"
   cat > "${tmp_file}" <<EOF
 spec:
   values:
@@ -86,7 +89,8 @@ EOF
 }
 
 function patch_harvester_node_disk_manager() {
-  local tmp_file="$(mktemp)"
+  local tmp_file
+  tmp_file="$(mktemp)"
   cat > "${tmp_file}" <<EOF
 spec:
   values:
@@ -99,7 +103,8 @@ EOF
 }
 
 function patch_harvester_node_manager() {
-  local tmp_file="$(mktemp)"
+  local tmp_file
+  tmp_file="$(mktemp)"
   cat > "${tmp_file}" <<EOF
 spec:
   values:
@@ -111,7 +116,7 @@ EOF
   kubectl -n fleet-local patch managedchart harvester --patch-file="${tmp_file}" --type merge
 }
 
-repo_name=$(basename ${PWD})
+repo_name=$(basename "${PWD}")
 
 case ${repo_name} in
 harvester)

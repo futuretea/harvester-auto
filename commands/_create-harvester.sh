@@ -48,17 +48,17 @@ cd "${workspace_cluster}"
 git clone -b "${git_repo_branch}" "${git_repo_url}"
 cd "${git_repo_name}"
 jinja2 settings.yml.j2 \
-  -D harvester_url=${harvester_url} \
-  -D harvester_version=${harvester_version} \
-  -D namespace_id=${namespace_id} \
-  -D cluster_id=${cluster_id} \
-  -D harvester_config_url=${harvester_config_url} \
-  -D dns_nameserver=${default_dns_nameserver} \
-  -D create_node_number=${default_create_node_number} \
-  -D node_number=${default_node_number} \
-  -D cpu_count=${default_cpu_count} \
-  -D memory_size=${default_memory_size} \
-  -D disk_size=${default_disk_size} >settings.yml
+  -D harvester_url="${harvester_url}" \
+  -D harvester_version="${harvester_version}" \
+  -D namespace_id="${namespace_id}" \
+  -D cluster_id="${cluster_id}" \
+  -D harvester_config_url="${harvester_config_url}" \
+  -D dns_nameserver="${default_dns_nameserver}" \
+  -D create_node_number="${default_create_node_number}" \
+  -D node_number="${default_node_number}" \
+  -D cpu_count="${default_cpu_count}" \
+  -D memory_size="${default_memory_size}" \
+  -D disk_size="${default_disk_size}" >settings.yml
 
 ansible-playbook ansible/setup_harvester.yml --extra-vars "@settings.yml"
 
@@ -79,17 +79,17 @@ cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${
 
 # test
 while true; do
-  if (kubectl --kubeconfig=${kubeconfig_file} -n harvester-system get deploy harvester > /dev/null 2>&1); then
+  if (kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system get deploy harvester > /dev/null 2>&1); then
     break
   fi
   sleep 3
 done || true
 
-kubectl --kubeconfig=${kubeconfig_file} -n harvester-system wait --for=condition=Available deploy harvester
+kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
 
 # init cluster use terraform
 while true; do
-  if (kubectl --kubeconfig=${kubeconfig_file} get settings.harvesterhci.io server-version > /dev/null 2>&1); then
+  if (kubectl --kubeconfig="${kubeconfig_file}" get settings.harvesterhci.io server-version > /dev/null 2>&1); then
     break
   fi
   sleep 3

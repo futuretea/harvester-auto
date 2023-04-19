@@ -6,133 +6,133 @@
   become: true
 
   tasks:
-  - name: Install base tools
-    apt:
-      name: "{{ item }}"
-      state: present
-    become: true
-    with_items:
-      - curl
-      - python3-pip
-      - snapd
-      - jq
-      - sshpass
+    - name: Install base tools
+      apt:
+        name: "{{ item }}"
+        state: present
+      become: true
+      with_items:
+        - curl
+        - python3-pip
+        - snapd
+        - jq
+        - sshpass
 
-  - name: Install jinja2-cli
-    pip:
-      name: jinja2-cli
-    become: true
+    - name: Install jinja2-cli
+      pip:
+        name: jinja2-cli
+      become: true
 
-  - name: Install yq
-    snap:
-      name: yq
-      classic: true
-      state: present
-    become: true
+    - name: Install yq
+      snap:
+        name: yq
+        classic: true
+        state: present
+      become: true
 
-  - name: Install novnc
-    snap:
-      name: novnc
-      classic: true
-      state: present
-    become: true
+    - name: Install novnc
+      snap:
+        name: novnc
+        classic: true
+        state: present
+      become: true
 
-  - name: Install vagrant-libvirt
-    apt:
-      name: "{{ item }}"
-      state: present
-    become: true
-    with_items:
-      - qemu
-      - libvirt-daemon-system
-      - ebtables
-      - libguestfs-tools
-      - vagrant
-      - ruby-fog-libvirt
+    - name: Install vagrant-libvirt
+      apt:
+        name: "{{ item }}"
+        state: present
+      become: true
+      with_items:
+        - qemu
+        - libvirt-daemon-system
+        - ebtables
+        - libguestfs-tools
+        - vagrant
+        - ruby-fog-libvirt
 
-  - name: Install Docker
-    shell: curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
-    become: true
+    - name: Install Docker
+      shell: curl -sL https://releases.rancher.com/install-docker/20.10.sh | bash -
+      become: true
 
-  - name: Enable and start Docker
-    systemd:
-      name: docker
-      enabled: yes
-      state: started
-    become: true
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+      become: true
 
-  - name: Install socks5 proxy server
-    docker_container:
-      name: socks5
-      image: serjs/go-socks5-proxy
-      state: started
-      restart_policy: unless-stopped
-      published_ports:
-        - "1080:1080"
-    become: true
+    - name: Install socks5 proxy server
+      docker_container:
+        name: socks5
+        image: serjs/go-socks5-proxy
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "1080:1080"
+      become: true
 
-  - name: Install kubectl
-    get_url:
-      url: "https://dl.k8s.io/release/v1.24.11/bin/linux/amd64/kubectl"
-      dest: /usr/local/bin/kubectl
-      mode: 'a+x'
-    become: true
+    - name: Install kubectl
+      get_url:
+        url: "https://dl.k8s.io/release/v1.24.11/bin/linux/amd64/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: "a+x"
+      become: true
 
-  - name: Install helm
-    shell: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
-    become: true
+    - name: Install helm
+      shell: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
+      become: true
 
-  - name: Install HashiCorp GPG key
-    apt_key:
-      url: https://apt.releases.hashicorp.com/gpg
-      state: present
-    become: true
+    - name: Install HashiCorp GPG key
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present
+      become: true
 
-  - name: Add HashiCorp repository
-    apt_repository:
-      repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
-      state: present
-    become: true
+    - name: Add HashiCorp repository
+      apt_repository:
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+        state: present
+      become: true
 
-  - name: Install Terraform
-    apt:
-      name: terraform
-      state: present
-    become: true
+    - name: Install Terraform
+      apt:
+        name: terraform
+        state: present
+      become: true
 
-  - name: Add Node.js 14 package source
-    shell: |
-      curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    - name: Add Node.js 14 package source
+      shell: |
+        curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 
-  - name: Install Node.js 14
-    apt:
-      name: nodejs
-      state: present
+    - name: Install Node.js 14
+      apt:
+        name: nodejs
+        state: present
 
-  - name: Add Yarn package source
-    shell: |
-      curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-      echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    - name: Add Yarn package source
+      shell: |
+        curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 
-  - name: Install Yarn
-    apt:
-      name: yarn
-      state: present
+    - name: Install Yarn
+      apt:
+        name: yarn
+        state: present
 
-  - name: Install nginx
-    apt:
-      name: nginx
-      state: present
-    become: true
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+      become: true
 
-  - name: Disable and stop systemd-resolved service
-    systemd:
-      name: systemd-resolved
-      state: stopped
-      enabled: no
+    - name: Disable and stop systemd-resolved service
+      systemd:
+        name: systemd-resolved
+        state: stopped
+        enabled: false
 
-  - name: Install dnsmasq
-    apt:
-      name: dnsmasq
-      state: present
-    become: true
+    - name: Install dnsmasq
+      apt:
+        name: dnsmasq
+        state: present
+      become: true

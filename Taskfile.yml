@@ -1,0 +1,23 @@
+---
+version: "3"
+
+includes:
+  precommit: .taskfiles/PrecommitTasks.yml
+  go: .taskfiles/GoTasks.yml
+
+tasks:
+  update:
+    desc: Update harvester-auto
+    cmds:
+      - git pull
+      - task go:build
+      - sudo systemctl stop harvester-auto
+      - mv ./bin/harvester-auto .
+      - sudo systemctl start harvester-auto
+  clean:
+    desc: Clean up
+    cmds:
+      - sudo docker images | grep harvester | grep -v none | awk '{print "docker rmi "$1":"$2}' | bash
+      - sudo docker system prune -f
+      - sudo docker volume prune -f
+      - sudo docker image prune -f

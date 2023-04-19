@@ -1,3 +1,4 @@
+---
 run:
   deadline: 5m
   skip-dirs:
@@ -17,7 +18,7 @@ linters:
     - goconst
     - gosimple
     - misspell
-#    - gosec
+  #    - gosec
   enable-all: false
   disable-all: true
   fast: false

@@ -6,3 +6,5 @@ vendor
 commands/_config.sh
 configs/config.yaml
 configs/nginx.conf
+.terraform.lock.hcl
+.terraform

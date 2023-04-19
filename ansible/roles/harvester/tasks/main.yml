@@ -26,7 +26,7 @@
   fetch:
     src: /var/www/harvester/config-create.yaml
     dest: fetched/config-create.yaml
-    flat: yes
+    flat: true
 
 - name: set config-create content fact
   set_fact:
@@ -35,8 +35,8 @@
 - name: Get additional harvester config from URL
   uri:
     url: "{{ settings['harvester_config']['additional_content_url'] }}"
-    validate_certs: no
-    return_content: yes
+    validate_certs: false
+    return_content: true
   register: additional_config_content
   when: settings['harvester_config']['additional_content_url']
 
@@ -52,7 +52,7 @@
   fetch:
     src: /var/www/harvester/config-additional.yaml
     dest: fetched/config-additional.yaml
-    flat: yes
+    flat: true
   when: settings['harvester_config']['additional_content_url']
 
 - name: merge create config
@@ -70,7 +70,7 @@
   fetch:
     src: /var/www/harvester/config-create.yaml
     dest: fetched/config-create-merge.yaml
-    flat: yes
+    flat: true
   when: settings['harvester_config']['additional_content_url']
 
 # NOTE(gyee): Ansible pre-process the with_sequence variable, so we have to
@@ -99,7 +99,7 @@
   fetch:
     src: "/var/www/harvester/config-join-{{ item }}.yaml"
     dest: "fetched/config-join-{{ item }}.yaml"
-    flat: yes
+    flat: true
   with_sequence: "start=2 end={{ end_sequence }}"
   when: settings['harvester_cluster_nodes'] > 1
 
@@ -125,7 +125,7 @@
   fetch:
     src: "/var/www/harvester/config-join-{{ item }}.yaml"
     dest: "fetched/config-join-merged-{{ item }}.yaml"
-    flat: yes
+    flat: true
   with_sequence: "start=2 end={{ end_sequence }}"
   when: settings['harvester_cluster_nodes'] > 1 and settings['harvester_config']['additional_content_url']
 
@@ -133,7 +133,7 @@
   file:
     path: /var/www/harvester/
     owner: www-data
-    recurse: yes
+    recurse: true
 
 - name: create boot entry for the first node
   template:
