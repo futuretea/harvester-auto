@@ -282,6 +282,19 @@ Send `help` to the Slack app to get the help message
 - stop - Stop Harvester cluster nodes `*`
   > Example: stop
 
+- snaps - List Harvester cluster snapshots `*`
+  > Example: snaps
+
+- snap - Snapshot Harvester cluster nodes `*`
+  > Example: snap 1node
+
+  > Example: snap 3node
+
+- revert - Revert Harvester cluster nodes `*`
+  > Example: revert 1node
+
+  > Example: revert 3node
+
 - virsh `command` `args` - virsh command warpper `*`
   > Example: virsh list
 
