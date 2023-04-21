@@ -81,10 +81,8 @@ else
   RKE2_IMAGE_REPO=${rke2_image_repo} make build-iso
 fi
 
-# mv iso
-output_dir="${iso_output_dir}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}/master"
-mkdir -p "${output_dir}"
-mv ./dist/artifacts/* "${output_dir}/"
+# upload iso to minio
+mc cp ./dist/artifacts/* "${harvester_iso_upload_oss_alias}/${harvester_iso_upload_bucket_name}/${fmt_harvester_prs}-${fmt_installer_prs}/master/"
 
 # clean
 rm -rf "${TEMPDIR}"
