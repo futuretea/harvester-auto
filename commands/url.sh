@@ -20,17 +20,15 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 
-workspace_cluster="${workspace_root}/${cluster_name}"
-workspace="${workspace_cluster}/harvester-auto"
+kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 host_ip=$(hostname -I | awk '{print $1}')
 echo "Host Nginx URL: http://${host_ip}"
 
-harvester_mgmt_url_file="${workspace}/harvester_mgmt_url.txt"
-if [[ -f "${harvester_mgmt_url_file}" ]]; then
+if [[ -f "${kubeconfig_file}" ]]; then
   echo "Socks5 Proxy URL: socks5://${host_ip}:1080"
 
-  harvester_mgmt_url=$(cat "${harvester_mgmt_url_file}")
+  harvester_mgmt_url="https://10.${namespace_id}.${cluster_id}.10"
   echo "Harvester Management URL(need proxy): ${harvester_mgmt_url}"
 
   harvester_explorer_url=${harvester_mgmt_url}/dashboard/c/local/explorer
