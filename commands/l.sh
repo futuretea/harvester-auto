@@ -18,6 +18,8 @@ namespace_id=$1
 
 source _config.sh
 source _util.sh
+
+
 host_ip=$(get_host_ip)
 
 echo "Id        Name        URL        State        Console"
@@ -34,12 +36,10 @@ for folder in "${workspace_root}"/*; do
     fi
 
     # cluster url
-    workspace_cluster="${workspace_root}/${cluster_name}"
-    workspace="${workspace_cluster}/harvester-auto"
     url="N/A"
-    harvester_mgmt_url_file="${workspace}/harvester_mgmt_url.txt"
-    if [[ -f "${harvester_mgmt_url_file}" ]]; then
-      url=$(cat "${harvester_mgmt_url_file}")
+    kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+    if [[ -f "${kubeconfig_file}" ]]; then
+      url="https://10.${namespace_id}.${cluster_id}.10"
     fi
 
     # cluster state

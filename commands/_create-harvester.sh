@@ -66,12 +66,6 @@ ansible-playbook ansible/setup_harvester.yml --extra-vars "@settings.yml"
 sudo virsh net-autostart "${cluster_name}"
 sudo virsh net-autostart vagrant-libvirt
 
-# get mgmt url
-mgmt_ip="10.${namespace_id}.${cluster_id}.10"
-harvester_mgmt_url="https://${mgmt_ip}"
-echo "${harvester_mgmt_url}" >harvester_mgmt_url.txt
-printf "harvester mgmt url: %s\n" "${harvester_mgmt_url}"
-
 # fetch kubeconfig
 first_node_ip="10.${namespace_id}.${cluster_id}.11"
 sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" >"${kubeconfig_file}.src" 2>/dev/null
