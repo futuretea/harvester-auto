@@ -22,10 +22,10 @@ cluster_id=$4
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
+kubeconfig_file="${workspace_cluster}/kubeconfig"
 
 mkdir -p "${workspace}/upgrade"
 cd "${workspace}/upgrade"

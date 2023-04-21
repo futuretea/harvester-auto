@@ -21,7 +21,9 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 
-version_file="${logs_dir}/${cluster_name}.version"
+workspace_cluster="${workspace_root}/${cluster_name}"
+version_file="${workspace_cluster}/version"
+
 pid_file="${logs_dir}/${cluster_name}-upgrade.pid"
 cleanup() {
   rm -rf "${pid_file}"

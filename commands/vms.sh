@@ -20,7 +20,9 @@ kube_namespace=$3
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+
+workspace_cluster="${workspace_root}/${cluster_name}"
+kubeconfig_file="${workspace_cluster}/kubeconfig"
 
 if [[ -f "${kubeconfig_file}" ]]; then
   kubectl --kubeconfig="${kubeconfig_file}" -n "${kube_namespace}" get vm

@@ -23,11 +23,12 @@ harvester_config_url=${5:-""}
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
-version_file="${logs_dir}/${cluster_name}.version"
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
+
+kubeconfig_file="${workspace_cluster}/kubeconfig"
+version_file="${workspace_cluster}/version"
 
 # destroy exist
 if [[ -d "${workspace}/.vagrant" ]]; then
