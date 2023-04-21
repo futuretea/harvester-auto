@@ -46,6 +46,9 @@ cloud-provider-harvester)
 load-balancer-harvester)
   tag_push_image harvester-load-balancer
   ;;
+harvester-load-balancer)
+  tag_push_image harvester-load-balancer
+  ;;
 node-disk-manager)
   tag_push_image node-disk-manager
   ;;
