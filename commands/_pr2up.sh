@@ -30,7 +30,7 @@ fmt_installer_prs=$(sym2dash "${installer_prs}")
 workspace_cluster="${workspace_root}/${cluster_name}"
 version_file="${workspace_cluster}/version"
 
-pid_file="${logs_dir}/${cluster_name}-patch.pid"
+pid_file="${logs_dir}/${cluster_name}-upgrade.pid"
 cleanup() {
   rm -rf "${pid_file}"
 }
