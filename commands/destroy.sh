@@ -22,10 +22,10 @@ source _config.sh
 
 log_file="${logs_dir}/${cluster_name}.log"
 pid_file="${logs_dir}/${cluster_name}.pid"
-version_file="${logs_dir}/${cluster_name}.version"
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
+version_file="${workspace_cluster}/version"
 
 if [[ -d "${workspace}/.vagrant" ]]; then
   cd "${workspace}"

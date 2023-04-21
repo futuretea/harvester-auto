@@ -27,7 +27,9 @@ source _util.sh
 fmt_harvester_prs=$(sym2dash "${harvester_prs}")
 fmt_installer_prs=$(sym2dash "${installer_prs}")
 
-version_file="${logs_dir}/${cluster_name}.version"
+workspace_cluster="${workspace_root}/${cluster_name}"
+version_file="${workspace_cluster}/version"
+
 pid_file="${logs_dir}/${cluster_name}-patch.pid"
 cleanup() {
   rm -rf "${pid_file}"

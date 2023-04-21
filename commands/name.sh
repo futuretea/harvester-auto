@@ -20,14 +20,16 @@ name=$3
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
+
 workspace_cluster="${workspace_root}/${cluster_name}"
+name_file="${workspace_cluster}/name"
 
 if [ -n "${name}" ]; then
-  echo "${name}" >"${workspace_cluster}/_name"
+  echo "${name}" >"${name_file}"
   echo "done"
 else
-  if [ -f "${workspace_cluster}/_name" ]; then
-    cat "${workspace_cluster}/_name"
+  if [ -f "${name_file}" ]; then
+    cat "${name_file}"
   else
     echo "N/A"
   fi

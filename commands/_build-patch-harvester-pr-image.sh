@@ -26,6 +26,9 @@ source _util.sh
 
 fmt_repo_prs=$(sym2dash "${repo_prs}")
 
+workspace_cluster="${workspace_root}/${cluster_name}"
+kubeconfig_file="${workspace_cluster}/kubeconfig"
+
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 TEMPDIR=$(mktemp -d -t "harvester-auto-patch-${TIMESTAMP}-XXXXX")
 printf "TEMP_DIR=%s\n" "${TEMPDIR}"
@@ -63,8 +66,6 @@ fi
 make
 
 harvester-push-images "${default_image_repo}"
-
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
 export KUBECONFIG="${kubeconfig_file}"
 harvester-patch-images "${default_image_repo}"
 

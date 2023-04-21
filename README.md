@@ -70,6 +70,14 @@ sudo snap install novnc
 sudo docker run -d --name wssh --restart=unless-stopped -p 8888:8888 futuretea/wssh
 ```
 
+#### WebTail
+
+```bash
+# refer to https://github.com/LeKovr/webtail
+logs_dir="/workspace/logs"
+sudo docker run -d --name webtail --restart=unless-stopped -p 8080:8080 -v ${logs_dir}:/mnt ghcr.io/lekovr/webtail --root /mnt
+```
+
 ### MinIO
 Use MinIO to serve the built ISO files.
 

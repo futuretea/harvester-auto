@@ -20,7 +20,8 @@ cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
 
-kubeconfig_file="${logs_dir}/${cluster_name}.kubeconfig"
+workspace_cluster="${workspace_root}/${cluster_name}"
+kubeconfig_file="${workspace_cluster}/kubeconfig"
 
 host_ip=$(hostname -I | awk '{print $1}')
 echo "Host Nginx URL: http://${host_ip}"
