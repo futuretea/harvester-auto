@@ -70,9 +70,30 @@ sudo snap install novnc
 sudo docker run -d --name wssh --restart=unless-stopped -p 8888:8888 futuretea/wssh
 ```
 
-#### Nginx
+### MinIO
+Use MinIO to serve the built ISO files.
 
-Use nginx to serve the built ISO, you can also use it to serve cloud images or other stuffs, just put your files
+- Refer to the documentation https://min.io/download to install minio
+- create a `harvester-iso` bucket
+- download minio client `mc`
+
+```bash
+wget https://dl.min.io/client/mc/release/linux-amd64/mc
+chmod +x mc
+mv mc /usr/local/bin/
+```
+- set alias
+```bash
+mc alias set myminio <minio url> <minio access key> <minio secret key>
+```
+
+- set policy
+```bash
+mc anonymous set download myminio/harvester-iso
+```
+
+#### Nginx
+Use nginx to serve cloud images or other stuffs, just put your files
 under `/var/www/html`.
 
 ```bash
@@ -81,6 +102,7 @@ sudo systemctl enable --now nginx
 ```
 
 #### Harbor
+Use Harbor to serve the built docker images.
 
 - Refer to the documentation https://goharbor.io/ to install Harbor
 - create a `rancher` project
@@ -91,14 +113,17 @@ docker login <Harbor domain>
 ```
 
 #### Dnsmasq
+Use Dnsmasq to resolving Harbor domain names
 
 - Refer to the documentation https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/ to install dnsmasq
 
 #### Nodejs
+Use Nodejs to build the UI
 
 - Refer to the documentation https://computingforgeeks.com/install-node-js-14-on-ubuntu-debian-linux/ to install nodejs
 
 #### Tools
+Some tools are required to run the scripts.
 
 ```bash
 sudo apt install -y ansible sshpass jq
