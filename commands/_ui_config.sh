@@ -12,3 +12,5 @@ export ui_dashboard_base_url="https://${ui_bucket_name}.${ui_bucket_endpoint}/${
 export ui_plugin_bucket_dir="bot-plugin"
 export ui_plugin_output_target="oss://${ui_bucket_name}/${ui_plugin_bucket_dir}"
 export ui_plugin_base_url="https://${ui_bucket_name}.${ui_bucket_endpoint}/${ui_plugin_bucket_dir}"
+# code
+export ui_base_branch="master"

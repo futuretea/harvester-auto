@@ -26,6 +26,16 @@ source _util.sh
 
 fmt_repo_prs=$(sym2dash "${repo_prs}")
 
+IFS="@" read -r repo_prs repo_target_branch <<<"${repo_prs}"
+
+if [ -z "${repo_target_branch}" ]; then
+  repo_target_branch="${backend_base_branch}"
+fi
+
+echo "repo_prs: ${repo_prs}"
+echo "repo_target_branch: ${repo_target_branch}"
+echo "repo_base_branch: ${backend_base_branch}"
+
 workspace_cluster="${workspace_root}/${cluster_name}"
 kubeconfig_file="${workspace_cluster}/kubeconfig"
 
@@ -40,27 +50,7 @@ git clone "https://github.com/harvester/${repo_name}.git"
 cd "${repo_name}"
 # pwd: TEMPDIR/${repo_name}
 
-prs="${repo_prs}"
-if [[ ${prs} != "0" ]]; then
-  # prepare code
-  IFS=',' read -ra prs_arr <<<"${prs}"
-  if [[ ${#prs_arr[@]} -eq 1 ]]; then
-    if [[ "${prs}" =~ ^[0-9]+$ ]]; then
-      fetch_checkout_pr "${prs}"
-    else
-      fetch_checkout_fork "${repo_name}" "${prs}"
-    fi
-  else
-    git checkout -b "pr-${fmt_repo_prs}"
-    for i in "${prs_arr[@]}"; do
-      if [[ "${i}" =~ ^[0-9]+$ ]]; then
-        fetch_merge_pr "${i}"
-      else
-        fetch_merge_fork "${repo_name}" "${i}"
-      fi
-    done
-  fi
-fi
+prepare_code "harvester" "${repo_name}" "${repo_prs}" "${fmt_repo_prs}" "${repo_target_branch}" "${backend_base_branch}"
 
 # build
 make
