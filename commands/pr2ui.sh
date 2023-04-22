@@ -17,19 +17,17 @@ fi
 namespace_id=$1
 ui_prs=$2
 
-source _ui_config.sh
-ui_log_file="${ui_logs_dir}/${namespace_id}.log"
-ui_pid_file="${ui_logs_dir}/${namespace_id}.pid"
-ui_version_file="${ui_logs_dir}/${namespace_id}.version"
+source _config.sh
+log_file="${logs_dir}/${namespace_id}-ui.log"
+pid_file="${logs_dir}/${namespace_id}-ui.pid"
 
-if [[ -f ${ui_pid_file} ]]; then
+if [[ -f ${pid_file} ]]; then
   echo "other job running"
   exit 0
 fi
 
-mkdir -p "${ui_logs_dir}"
-nohup ./_pr2ui.sh "${namespace_id}" "${ui_prs}" >"${ui_log_file}" 2>&1 &
-echo "$! pr2ui ${ui_prs}" >"${ui_pid_file}"
-echo "harvester/dashboard PRs: ${ui_prs}" >"${ui_version_file}"
+mkdir -p "${logs_dir}"
+nohup ./_pr2ui.sh "${namespace_id}" "${ui_prs}" >"${log_file}" 2>&1 &
+echo "$! pr2ui ${ui_prs}" >"${pid_file}"
 
 echo "got"

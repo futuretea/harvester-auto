@@ -111,3 +111,45 @@ prepare_code() {
     fi
   fi
 }
+
+get_cluster_name() {
+  local namespace_id=$1
+  local cluster_id=$2
+  echo "harvester-${namespace_id}-${cluster_id}"
+}
+
+get_job_file(){
+  local job_type=$1
+  local namespace_id=$2
+  local cluster_id=$3
+
+  local cluster_name=
+  cluster_name=$(get_cluster_name "${namespace_id}" "${cluster_id}")
+
+  local file_name=
+  case ${job_type} in
+  "2c")
+    file_name="${cluster_name}"
+    ;;
+  "sc")
+    file_name="${cluster_name}-scale"
+    ;;
+  "up")
+    file_name="${cluster_name}-upgrade"
+    ;;
+  "2pt")
+    file_name="${cluster_name}-patch"
+    ;;
+  "2iso")
+    file_name="${namespace_id}-iso"
+    ;;
+  "2ui")
+    file_name="${namespace_id}-ui"
+    ;;
+  *)
+    echo "invalid job type"
+    exit 0
+    ;;
+  esac
+  echo "${file_name}"
+}

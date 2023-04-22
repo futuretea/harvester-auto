@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-export ui_workspace_root="/ui_workspace"
-export ui_logs_dir="${ui_workspace_root}/logs"
 # bucket
 export ui_bucket_endpoint="oss-cn-hangzhou.aliyuncs.com"
 export ui_bucket_name="harvester-dev"

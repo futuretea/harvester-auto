@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    kill.sh namespace_id cluster_id job num
+    log.sh namespace_id cluster_id job_type num
 HELP
 }
 
@@ -16,38 +16,15 @@ fi
 
 namespace_id=$1
 cluster_id=$2
-job=$3
+job_type=$3
 num=${4:-20}
 
 source _config.sh
-source _ui_config.sh
-cluster_name="harvester-${namespace_id}-${cluster_id}"
+source _util.sh
 
-case ${job} in
-"2c")
-  log_file="${logs_dir}/${cluster_name}.log"
-  ;;
-"2pt")
-  log_file="${logs_dir}/${cluster_name}-patch.log"
-  ;;
-"2iso")
-  log_file="${logs_dir}/${namespace_id}-iso.log"
-  ;;
-"2ui")
-  log_file="${ui_logs_dir}/${namespace_id}.log"
-  ;;
-"sc")
-  log_file="${logs_dir}/${cluster_name}-scale.log"
-  ;;
-"up")
-  log_file="${logs_dir}/${cluster_name}-upgrade.log"
-  ;;
-*)
-  echo "invalid job type"
-  exit 0
-  ;;
-esac
+job_file_name=$(get_job_file "${job_type}" "${namespace_id}" "${cluster_id}")
 
+log_file="${logs_dir}/${job_file_name}.log"
 if [ -f "${log_file}" ]; then
   tail -n "${num}" "${log_file}"
 else

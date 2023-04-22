@@ -17,10 +17,10 @@ fi
 namespace_id=$1
 ui_prs=$2
 
-source _ui_config.sh
+source _config.sh
 source _util.sh
 
-pid_file="${ui_logs_dir}/${namespace_id}.pid"
+pid_file="${logs_dir}/${namespace_id}-ui.pid"
 cleanup() {
   rm -rf "${pid_file}"
 }
