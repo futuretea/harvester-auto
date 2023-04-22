@@ -23,6 +23,7 @@ harvester_config_url=${5:-""}
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
+source _util.sh
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
@@ -76,7 +77,7 @@ sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o
 cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - >"${kubeconfig_file}"
 
 # wait harvester ready
-wait_harvester_ready
+wait_harvester_ready "${kubeconfig_file}"
 
 # init cluster by ${workspace}/terraform
 if [[ -d "terraform" ]]; then

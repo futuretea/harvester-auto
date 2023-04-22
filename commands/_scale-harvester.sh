@@ -20,6 +20,7 @@ spec_node_number=$3
 cluster_name="harvester-${namespace_id}-${cluster_id}"
 
 source _config.sh
+source _util.sh
 
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
@@ -45,7 +46,7 @@ mv settings.yml.tmp settings.yml
 ansible-playbook ansible/scale_harvester.yml --extra-vars "@settings.yml" --extra-vars "spec_node_number=${spec_node_number}"
 
 # wait harvester ready
-wait_harvester_ready
+wait_harvester_ready "${kubeconfig_file}"
 
 if [ -n "${slack_webhook_url}" ]; then
   text="scale cluster ${cluster_id} in namespace ${namespace_id} finished"
