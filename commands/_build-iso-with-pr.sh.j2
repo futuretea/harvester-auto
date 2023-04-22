@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+TOP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." &> /dev/null && pwd )"
+SCRIPTS_DIR="${TOP_DIR}/scripts"
+
+# shellcheck source=/dev/null
+source "${SCRIPTS_DIR}/version"
+source "${SCRIPTS_DIR}/_util.sh"
+
+cd "${TOP_DIR}"
+echo "Start building ISO image"
+
+cd ..
+prepare_code "harvester" "harvester-installer" "{{ installer_prs }}" "{{ fmt_installer_prs }}" "{{ installer_target_branch }}" "{{ backend_base_branch }}"
+
+cd scripts
+./ci
+
+cd ..
+HARVESTER_DIR=../harvester
+mkdir -p "${HARVESTER_DIR}/dist/artifacts"
+cp dist/artifacts/* "${HARVESTER_DIR}/dist/artifacts"

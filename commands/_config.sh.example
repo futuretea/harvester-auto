@@ -24,3 +24,4 @@ export default_tf_init_ubuntu_image_url="http://cloud-images.ubuntu.com/releases
 export default_tf_init_ubuntu_mirror_url="http://us.archive.ubuntu.com/ubuntu/"
 export harvester_iso_upload_oss_alias="myminio"
 export harvester_iso_upload_bucket_name="harvester-iso"
+export backend_base_branch="master"

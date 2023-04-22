@@ -17,38 +17,23 @@ source _util.sh
 
 fmt_ui_prs=$(sym2dash "${ui_prs}")
 
+IFS="@" read -r ui_prs ui_target_branch <<<"${ui_prs}"
+
+if [ -z "${ui_target_branch}" ]; then
+  ui_target_branch="${ui_base_branch}"
+fi
+
+echo "ui_prs: ${ui_prs}"
+echo "ui_target_branch: ${ui_target_branch}"
+echo "ui_base_branch: ${ui_base_branch}"
+
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 TEMPDIR=$(mktemp -d -t "harvester-auto-${TIMESTAMP}-XXXXX")
 printf "TEMP_DIR=%s\n" "${TEMPDIR}"
 
 cd "${TEMPDIR}"
 # pwd: TEMPDIR
-
-git clone https://github.com/harvester/dashboard.git
-cd dashboard
-# pwd: TEMPDIR/dashboard
-
-prs="${ui_prs}"
-if [[ ${prs} != "0" ]]; then
-  # prepare code
-  IFS=',' read -ra prs_arr <<<"${prs}"
-  if [[ ${#prs_arr[@]} -eq 1 ]]; then
-    if [[ "${prs}" =~ ^[0-9]+$ ]]; then
-      fetch_checkout_pr "${prs}"
-    else
-      fetch_checkout_fork "dashboard" "${prs}"
-    fi
-  else
-    git checkout -b "pr-${fmt_ui_prs}"
-    for i in "${prs_arr[@]}"; do
-      if [[ "${i}" =~ ^[0-9]+$ ]]; then
-        fetch_merge_pr "${i}"
-      else
-        fetch_merge_fork "dashboard" "${i}"
-      fi
-    done
-  fi
-fi
+prepare_code "harvester" "dashboard" "${ui_prs}" "${fmt_ui_prs}" "${ui_target_branch}" "${ui_base_branch}"
 
 set +e
 GIT_TAG=$(git tag -l --contains HEAD | head -n 1)
