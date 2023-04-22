@@ -25,6 +25,8 @@ source _util.sh
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
 
+kubeconfig_file="${workspace_cluster}/kubeconfig"
+
 pid_file="${logs_dir}/${cluster_name}-scale.pid"
 cleanup() {
   rm -rf "${pid_file}"
