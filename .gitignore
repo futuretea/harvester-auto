@@ -8,3 +8,6 @@ configs/config.yaml
 configs/nginx.conf
 .terraform.lock.hcl
 .terraform
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars

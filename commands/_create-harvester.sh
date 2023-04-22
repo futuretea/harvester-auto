@@ -27,6 +27,9 @@ source _config.sh
 workspace_cluster="${workspace_root}/${cluster_name}"
 workspace="${workspace_cluster}/harvester-auto"
 
+TOP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." &> /dev/null && pwd )"
+terraform_vars_file="${TOP_DIR}/terraform/terraform.tfvars"
+
 kubeconfig_file="${workspace_cluster}/kubeconfig"
 version_file="${workspace_cluster}/version"
 
@@ -72,29 +75,24 @@ first_node_ip="10.${namespace_id}.${cluster_id}.11"
 sshpass -p "${default_node_password}" ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no rancher@"${first_node_ip}" sudo cat "/etc/rancher/rke2/rke2.yaml" >"${kubeconfig_file}.src" 2>/dev/null
 cat "${kubeconfig_file}.src" | yq e '.clusters[0].cluster.server = "https://'"${first_node_ip}"':6443"' - >"${kubeconfig_file}"
 
-# test
-while true; do
-  if (kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system get deploy harvester > /dev/null 2>&1); then
-    break
-  fi
-  sleep 3
-done || true
+# wait harvester ready
+wait_harvester_ready
 
-kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
+# init cluster by ${workspace}/terraform
+if [[ -d "terraform" ]]; then
+  cd "terraform"
 
-# init cluster use terraform
-while true; do
-  if (kubectl --kubeconfig="${kubeconfig_file}" get settings.harvesterhci.io server-version > /dev/null 2>&1); then
-    break
-  fi
-  sleep 3
-done || true
-
-if [[ -d "tf" ]]; then
-  cd tf
   ln -s "${kubeconfig_file}" local.yaml
+
   terraform init
-  terraform apply -auto-approve -var "ubuntu_image_url=${default_tf_init_ubuntu_image_url}" -var "ubuntu_mirror_url=${default_tf_init_ubuntu_mirror_url}"
+
+  if [[ -f "${terraform_vars_file}" ]]; then
+    cp "${terraform_vars_file}" terraform.tfvars
+  else
+    cp "${terraform_vars_file}.example" terraform.tfvars
+  fi
+
+  terraform apply -auto-approve -var-file="terraform.tfvars"
 fi
 
 if [ -n "${slack_webhook_url}" ]; then

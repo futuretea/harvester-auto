@@ -55,7 +55,10 @@ prepare_code "harvester" "${repo_name}" "${repo_prs}" "${fmt_repo_prs}" "${repo_
 # build
 make
 
+# push
 harvester-push-images "${default_image_repo}"
+
+# patch
 export KUBECONFIG="${kubeconfig_file}"
 harvester-patch-images "${default_image_repo}"
 
