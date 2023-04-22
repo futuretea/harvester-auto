@@ -153,3 +153,39 @@ get_job_file(){
   esac
   echo "${file_name}"
 }
+
+kill_job() {
+  local pid_file=$1
+  local pid
+  pid=$(awk '{print $1}' "${pid_file}")
+  set +e
+  pids=$(sudo pstree -p "${pid}" | awk -F '[()]' '{printf $2" "}')
+  for _ in $(seq 1 10); do
+    if [ -n "${pids}" ]; then
+      echo "${pids}" | xargs -r kill -TERM
+      sleep 1
+    fi
+  done
+  set -e
+}
+
+
+wait_harvester_ready() {
+  local kubeconfig_file=$1
+
+  while true; do
+    if (kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system get deploy harvester > /dev/null 2>&1); then
+      break
+    fi
+    sleep 3
+  done || true
+
+  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
+
+  while true; do
+    if (kubectl --kubeconfig="${kubeconfig_file}" get settings.harvesterhci.io server-version > /dev/null 2>&1); then
+      break
+    fi
+    sleep 3
+  done || true
+}

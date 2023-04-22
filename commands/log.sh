@@ -25,6 +25,7 @@ source _util.sh
 job_file_name=$(get_job_file "${job_type}" "${namespace_id}" "${cluster_id}")
 
 log_file="${logs_dir}/${job_file_name}.log"
+
 if [ -f "${log_file}" ]; then
   tail -n "${num}" "${log_file}"
 else
