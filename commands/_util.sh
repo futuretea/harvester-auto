@@ -180,7 +180,7 @@ wait_harvester_ready() {
     sleep 3
   done || true
 
-  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
+  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester --timeout=10m
 
   while true; do
     if (kubectl --kubeconfig="${kubeconfig_file}" get settings.harvesterhci.io server-version > /dev/null 2>&1); then
