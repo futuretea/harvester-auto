@@ -132,7 +132,9 @@ func main() {
 		AuthorizationFunc: authorizationFunc,
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			user, _ := getUserByUserName(botCtx.Event().UserName)
-			bashCommand := fmt.Sprintf("./l.sh %d", user.NamespaceID)
+			userContext := getUserContext(botCtx.Event().UserName)
+			clusterID := userContext.GetClusterID()
+			bashCommand := fmt.Sprintf("./l.sh %d %d", user.NamespaceID, clusterID)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
