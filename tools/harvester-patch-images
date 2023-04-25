@@ -37,13 +37,17 @@ spec:
         tag: ${TARGET_TAG}
 EOF
   kubectl -n fleet-local patch managedchart harvester --patch-file="${tmp_file}" --type merge
-  kubectl -n harvester-system scale deploy harvester --replicas=0
-  kubectl -n harvester-system scale deploy harvester-webhook --replicas=0
-  kubectl -n harvester-system delete rs -l app.kubernetes.io/name=harvester
-  kubectl -n harvester-system scale deploy harvester --replicas=1
-  kubectl -n harvester-system scale deploy harvester-webhook --replicas=1
-  kubectl -n harvester-system wait --for=condition=Available deploy harvester
-  kubectl -n harvester-system wait --for=condition=Available deploy harvester-webhook
+  set +e
+  for _ in $(seq 1 10); do
+      kubectl -n harvester-system get rs --no-headers -l app.kubernetes.io/name=harvester -owide | grep -v "${TARGET_TAG}" | awk '{print $1}' | while read -r rs; do
+        kubectl -n harvester-system delete rs "${rs}" --ignore-not-found=true
+        sleep 3
+      done
+  done
+  set -e
+  kubectl -n harvester-system wait --for=condition=Available deploy harvester --timeout 10m
+  kubectl -n harvester-system wait --for=condition=Available deploy harvester-webhook --timeout 10m
+  kubectl -n fleet-local wait --for=condition=Ready managedchart harvester --timeout 10m
 }
 
 function patch_harvester_network_controller() {
@@ -144,3 +148,5 @@ harvester-node-manager)
   patch_harvester_node_manager
   ;;
 esac
+
+kubectl -n fleet-local wait --for=condition=Ready managedchart harvester
