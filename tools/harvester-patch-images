@@ -36,7 +36,7 @@ spec:
         repository: ${TARGET_REPO}/harvester-webhook
         tag: ${TARGET_TAG}
 EOF
-  kubectl -n fleet-local patch managedchart harvester --patch-file=/tmp/harvester-fix.yaml --type merge
+  kubectl -n fleet-local patch managedchart harvester --patch-file="${tmp_file}" --type merge
   kubectl -n harvester-system scale deploy harvester --replicas=0
   kubectl -n harvester-system scale deploy harvester-webhook --replicas=0
   kubectl -n harvester-system delete rs -l app.kubernetes.io/name=harvester
