@@ -95,3 +95,9 @@ mc cp ./dist/artifacts/* "${harvester_iso_upload_oss_alias}/${harvester_iso_uplo
 
 # clean
 rm -rf "${TEMPDIR}"
+
+if [ -n "${slack_webhook_url}" ]; then
+  harvester_iso_download_oss_url=$(mc alias ls "${harvester_iso_upload_oss_alias}" --json | jq -r '.URL')
+  text="build iso ${harvester_prs} ${installer_prs} finished, download url: "${harvester_iso_download_oss_url}/${harvester_iso_upload_bucket_name}/${fmt_harvester_prs}-${fmt_installer_prs}/master/harvester-master-amd64.iso""
+  curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
+fi
