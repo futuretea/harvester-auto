@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    l.sh namespace_id
+    l.sh namespace_id current_cluster_id
 HELP
 }
 
@@ -15,6 +15,7 @@ if [ $# -lt 1 ]; then
 fi
 
 namespace_id=$1
+current_cluster_id=${2:-"0"}
 
 source _config.sh
 source _util.sh
@@ -33,6 +34,9 @@ for folder in "${workspace_root}"/*; do
     name_file="${folder}/name"
     if [ -f "${name_file}" ]; then
       name=$(cat "${name_file}")
+    fi
+    if [ "${cluster_id}" == "${current_cluster_id}" ]; then
+      name="*${name}"
     fi
 
     # cluster url
