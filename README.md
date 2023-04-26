@@ -105,10 +105,10 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install terraform
 ````
 
-## Dependent service
+### Dependent service
 Use the following LAN services to speed up the build process.
 
-### MinIO
+#### MinIO
 Use MinIO to serve the built ISO files.
 
 - Refer to the documentation https://min.io/download to install minio
