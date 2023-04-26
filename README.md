@@ -28,7 +28,7 @@ Create a Harvester Cluster with a single slack command.
 
 ## Environment
 
-### Ubuntu
+### Node Setup
 
 #### Vagrant Libvirt
 
@@ -78,53 +78,6 @@ logs_dir="/workspace/logs"
 sudo docker run -d --name webtail --restart=unless-stopped -p 8080:8080 -v ${logs_dir}:/mnt ghcr.io/lekovr/webtail --root /mnt
 ```
 
-### MinIO
-Use MinIO to serve the built ISO files.
-
-- Refer to the documentation https://min.io/download to install minio
-- create a `harvester-iso` bucket
-- download minio client `mc`
-
-```bash
-wget https://dl.min.io/client/mc/release/linux-amd64/mc
-chmod +x mc
-mv mc /usr/local/bin/
-```
-- set alias
-```bash
-mc alias set myminio <minio url> <minio access key> <minio secret key>
-```
-
-- set policy
-```bash
-mc anonymous set download myminio/harvester-iso
-```
-
-#### Nginx
-Use nginx to serve cloud images or other stuffs, just put your files
-under `/var/www/html`.
-
-```bash
-sudo apt install -y nginx
-sudo systemctl enable --now nginx
-```
-
-#### Harbor
-Use Harbor to serve the built docker images.
-
-- Refer to the documentation https://goharbor.io/ to install Harbor
-- create a `rancher` project
-- docker login
-
-```bash
-docker login <Harbor domain>
-```
-
-#### Dnsmasq
-Use Dnsmasq to resolving Harbor domain names
-
-- Refer to the documentation https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/ to install dnsmasq
-
 #### Nodejs
 Use Nodejs to build the UI
 
@@ -151,6 +104,42 @@ wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform
 ````
+
+## Dependent service
+Use the following LAN services to speed up the build process.
+
+### MinIO
+Use MinIO to serve the built ISO files.
+
+- Refer to the documentation https://min.io/download to install minio
+- create a `harvester-iso` bucket
+- download minio client `mc`
+
+```bash
+wget https://dl.min.io/client/mc/release/linux-amd64/mc
+chmod +x mc
+mv mc /usr/local/bin/
+```
+- set alias
+```bash
+mc alias set myminio <minio url> <minio access key> <minio secret key>
+```
+
+- set policy
+```bash
+mc anonymous set download myminio/harvester-iso
+```
+
+#### Harbor
+Use Harbor to serve the built docker images.
+
+- Refer to the documentation https://goharbor.io/ to install Harbor
+- create a `rancher` project
+- docker login
+
+```bash
+docker login <Harbor domain>
+```
 
 ## Usage
 
@@ -183,16 +172,6 @@ cd configs
 cp config.yaml.example config.yaml
 vim config.yaml
 cd -
-```
-
-You can use the default nginx configuration or use the custom one `configs/nginx.conf` in this repo.
-
-```bash
-cd configs
-sudo cp configs/nginx.conf.example /etc/nginx/nginx.conf
-sudo vim /etc/nginx/nginx.conf
-sudo nginx -t
-sudo systemctl restart nginx
 ```
 
 ### Build
