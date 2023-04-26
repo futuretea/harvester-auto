@@ -1,5 +1,5 @@
 ---
-- name: Install software dependencies
+- name: Setup environment
   hosts: localhost
   connection: local
   gather_facts: true
@@ -37,6 +37,13 @@
         state: present
       become: true
 
+    - name: Install task
+      snap:
+        name: task
+        classic: true
+        state: present
+      become: true
+
     - name: Install vagrant-libvirt
       apt:
         name: "{{ item }}"
@@ -69,6 +76,29 @@
         restart_policy: unless-stopped
         published_ports:
           - "1080:1080"
+      become: true
+
+    - name: Install wssh server
+      docker_container:
+        name: wssh
+        image: futuretea/wssh
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "8888:8888"
+      become: true
+
+    - name: Install webtail server
+      docker_container:
+        name: webtail
+        image: ghcr.io/lekovr/webtail
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "8080:8080"
+        volumes:
+          - /workspace/logs:/mnt
+        command: --root /mnt
       become: true
 
     - name: Install kubectl
@@ -118,21 +148,3 @@
       apt:
         name: yarn
         state: present
-
-    - name: Install nginx
-      apt:
-        name: nginx
-        state: present
-      become: true
-
-    - name: Disable and stop systemd-resolved service
-      systemd:
-        name: systemd-resolved
-        state: stopped
-        enabled: false
-
-    - name: Install dnsmasq
-      apt:
-        name: dnsmasq
-        state: present
-      become: true
