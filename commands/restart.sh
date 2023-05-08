@@ -21,6 +21,10 @@ pxe_server_name="pxe-server-${namespace_id}-${cluster_id}"
 
 source _config.sh
 
+# start network
+sudo virsh start "${cluster_name}"
+
+# reboot VMs
 for vm_name in $(sudo virsh -q list --all | awk '{print $2}'); do
   vm="${vm_name#harvester-auto_}"
   if [[ "${vm}" != ${cluster_name}* ]] && [[ "${vm}" != "${pxe_server_name}" ]]; then
