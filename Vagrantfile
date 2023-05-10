@@ -43,6 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     pxe_server.vm.network 'private_network',
       ip: "#{dhcp_server_ip}",
       libvirt__network_name: "#{network_name}",
+      libvirt__always_destroy: false,
       # don't enable DHCP as this node will have it's now DHCP server for iPXE
       # boot
       libvirt__dhcp_enabled: false
@@ -72,9 +73,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       harvester_node.vm.hostname = "#{vm_name}"
       harvester_node.vm.network 'private_network',
         libvirt__network_name: "#{network_name}",
+        libvirt__always_destroy: false,
         mac: @settings['harvester_network_config']['cluster'][node_number-1]['mac']
       harvester_node.vm.network 'private_network',
         libvirt__network_name: "#{network_name}",
+        libvirt__always_destroy: false,
         mac: @settings['harvester_network_config']['cluster'][node_number-1]['mac_second']
       harvester_node.vm.provider :libvirt do |libvirt|
         libvirt.cpu_mode = 'host-passthrough'
