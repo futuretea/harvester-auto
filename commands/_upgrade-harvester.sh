@@ -30,8 +30,9 @@ kubeconfig_file="${workspace_cluster}/kubeconfig"
 mkdir -p "${workspace}/upgrade"
 cd "${workspace}/upgrade"
 
-wget -nc "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
 iso_local_file="harvester-${harvester_version}-amd64.iso"
+rm -rf "${iso_local_file}"
+wget -nc "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
 iso_check_sum=$(sha512sum "${iso_local_file}" | awk '{print $1}')
 release_date=$(date +"%Y%m%d")
 
@@ -72,7 +73,7 @@ metadata:
   name: hvst-upgrade-auto
   namespace: harvester-system
 spec:
-  version: ${harvester_version}
+  version: ${upgrade_to_version}
 EOF
 kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system delete upgrades.harvesterhci.io --all
 kubectl --kubeconfig="${kubeconfig_file}" apply -f upgrade.yaml
