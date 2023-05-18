@@ -1,15 +1,15 @@
 module github.com/futuretea/harvester-auto
 
-go 1.19
+go 1.20
 
 require (
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/shomali11/slacker v1.3.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/viper v1.15.0
 )
 
 require (
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
