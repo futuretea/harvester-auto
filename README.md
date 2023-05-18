@@ -236,6 +236,20 @@ task update
 
 Send `help` to the Slack app to get the help message
 
+#### PRs format in commands
+
+1. A number `0` means no PRs
+2. A number greater than 0 means the PR number, e.g. `123` means the PR `123`
+3. A string means a branch name in fork repo, e.g. `futuretea:dev` means the branch `dev` in user `futuretea`'s fork repo
+4. Support multiple PRs or branches, separated by comma, e.g. `123,456,futuretea:dev`
+5. Support backport PRs, e.g. `123@v1.1` means backport PR `123` to branch `v1.1`
+
+A complete example: `123,futuretea:dev@v1.1` will:
+- Checkout the base branch, default to `master`
+- Create a base branch named `pr-123-futuretea-dev-v1-1` from the base master
+- Backport PR `123` to branch `v1.1`, cherry-pick the changes
+- Backport branch `dev` in user `futuretea`'s fork repo to branch `v1.1`, cherry-pick the changes
+
 #### Commands
 
 - help - help
