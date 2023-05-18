@@ -45,6 +45,7 @@ cloud-provider-harvester)
   ;;
 load-balancer-harvester)
   tag_push_image harvester-load-balancer
+  tag_push_image harvester-load-balancer-webhook
   ;;
 harvester-load-balancer)
   tag_push_image harvester-load-balancer
