@@ -40,6 +40,21 @@ sudo apt install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant
 vagrant plugin install vagrant-libvirt
 ```
 
+Create 4 pools to store virtual disks. In order to improve performance and stability, it is recommended that different pools correspond to different underlying physical nvme disks
+```bash
+create_pool(){
+	local pool_name=$1
+	local pool_target=$2
+	virsh pool-define-as $1 dir --target $2
+	virsh pool-autostart $1
+	virsh pool-start $1
+}
+create_pool pool1 /var/lib/libvirt/images/pool1
+create_pool pool2 /var/lib/libvirt/images/pool2
+create_pool pool3 /var/lib/libvirt/images/pool3
+create_pool pool4 /var/lib/libvirt/images/pool4
+```
+
 #### Docker
 
 ```bash
