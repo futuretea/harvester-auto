@@ -40,8 +40,8 @@ if [ "${reuse_built_iso}" != "true" ]; then
   bash -x ./_build-harvester-pr-iso.sh "${harvester_prs}" "${installer_prs}"
 fi
 
-host_ip=$(hostname -I | awk '{print $1}')
-bash -x ./_upgrade-harvester.sh "http://${host_ip}/harvester/${fmt_harvester_prs}-${fmt_installer_prs}" master "${namespace_id}" "${cluster_id}"
+harvester_iso_download_oss_url=$(mc alias ls "${harvester_iso_upload_oss_alias}" --json | jq -r '.URL')
+bash -x ./_upgrade-harvester.sh "${harvester_iso_download_oss_url}/${harvester_iso_upload_bucket_name}/${fmt_harvester_prs}-${fmt_installer_prs}" master "${namespace_id}" "${cluster_id}"
 
 echo "harvester/harvester PRs: ${harvester_prs}" >"${version_file}"
 echo "harvester/harvester-installer PRs: ${installer_prs}" >>"${version_file}"
