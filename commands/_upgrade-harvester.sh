@@ -30,12 +30,18 @@ kubeconfig_file="${workspace_cluster}/kubeconfig"
 mkdir -p "${workspace}/upgrade"
 cd "${workspace}/upgrade"
 
-iso_local_file="harvester-${harvester_version}-amd64.iso"
-rm -rf "${iso_local_file}"
-wget -q "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
-iso_check_sum=$(sha512sum "${iso_local_file}" | awk '{print $1}')
-release_date=$(date +"%Y%m%d")
+# patch system-upgrade-controller
+cat > upgrade-fix.yaml <<EOF
+spec:
+  values:
+    systemUpgradeJobActiveDeadlineSeconds: "3600"
+EOF
 
+kubectl --kubeconfig="${kubeconfig_file}" -n fleet-local patch managedcharts.management.cattle.io local-managed-system-upgrade-controller --patch-file=upgrade-fix.yaml --type merge
+kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system rollout restart deploy/system-upgrade-controller
+kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system wait --for=condition=Available deploy system-upgrade-controller
+
+# patch server-version
 server_version=$(kubectl --kubeconfig="${kubeconfig_file}" get setting server-version -o jsonpath='{.value}')
 if [[ ! "${server_version}" == "v"* ]]; then
   cat > server-version.yaml <<EOF
@@ -44,6 +50,14 @@ EOF
   kubectl --kubeconfig="${kubeconfig_file}" patch setting server-version --patch-file=server-version.yaml --type merge
 fi
 
+# download iso from url
+iso_local_file="harvester-${harvester_version}-amd64.iso"
+rm -rf "${iso_local_file}"
+wget -q "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
+iso_check_sum=$(sha512sum "${iso_local_file}" | awk '{print $1}')
+release_date=$(date +"%Y%m%d")
+
+# create version from iso
 upgrade_to_version="${harvester_version}"
 if [[ ! "${harvester_version}" == "v"* ]]; then
   upgrade_to_version="${default_upgrade_to_version}"
@@ -63,6 +77,7 @@ EOF
 
 kubectl --kubeconfig="${kubeconfig_file}" apply -f version.yaml
 
+# create upgrade from version
 cat > upgrade.yaml <<EOF
 apiVersion: harvesterhci.io/v1beta1
 kind: Upgrade
@@ -75,16 +90,7 @@ EOF
 kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system delete upgrades.harvesterhci.io --all
 kubectl --kubeconfig="${kubeconfig_file}" apply -f upgrade.yaml
 
-cat > upgrade-fix.yaml <<EOF
-spec:
-  values:
-    systemUpgradeJobActiveDeadlineSeconds: "3600"
-EOF
-
-kubectl --kubeconfig="${kubeconfig_file}" -n fleet-local patch managedcharts.management.cattle.io local-managed-system-upgrade-controller --patch-file=upgrade-fix.yaml --type merge
-kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system rollout restart deploy/system-upgrade-controller
-kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system wait --for=condition=Available deploy system-upgrade-controller
-
+# wait upgrade
 kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Completed Upgrade hvst-upgrade-auto --timeout=180m
 echo "Completed"
 
