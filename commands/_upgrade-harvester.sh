@@ -32,7 +32,7 @@ cd "${workspace}/upgrade"
 
 iso_local_file="harvester-${harvester_version}-amd64.iso"
 rm -rf "${iso_local_file}"
-wget -nc "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
+wget -q "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
 iso_check_sum=$(sha512sum "${iso_local_file}" | awk '{print $1}')
 release_date=$(date +"%Y%m%d")
 
@@ -42,9 +42,6 @@ if [[ ! "${server_version}" == "v"* ]]; then
   value: ${default_upgrade_from_version}
 EOF
   kubectl --kubeconfig="${kubeconfig_file}" patch setting server-version --patch-file=server-version.yaml --type merge
-  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system scale deploy harvester --replicas=0
-  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system scale deploy harvester --replicas=1
-  kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Available deploy harvester
 fi
 
 upgrade_to_version="${harvester_version}"
