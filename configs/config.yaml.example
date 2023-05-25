@@ -4,12 +4,12 @@ slack:
   envs:
     slack_webhook_url: <slack_webhook_url>
   users:
-    <slack username 1>:
+  	- name: <slack username 1>
       namespace: 1
       mode: rw
-    <slack username 2>:
+  	- name: <slack username 2>
       namespace: 1
       mode: ro
-    <slack username 3>:
+  	- name: <slack username 3>
       namespace: 2
       mode: rw
