@@ -22,6 +22,7 @@ import (
 var (
 	conf         config.Config
 	userContexts = map[string]*ctx.Context{}
+	users        = map[string]*config.User{}
 )
 
 func init() {
@@ -44,6 +45,10 @@ func init() {
 	for envName, envValue := range conf.Slack.Envs {
 		os.Setenv(envName, envValue)
 	}
+	// users
+	for _, user := range conf.Slack.Users {
+		users[user.Name] = user
+	}
 }
 
 func dynamicConfig() {
@@ -64,7 +69,7 @@ func setUserContext(userName string, userContext *ctx.Context) {
 }
 
 func getUserByUserName(userName string) (*config.User, bool) {
-	user, exist := conf.Slack.Users[userName]
+	user, exist := users[userName]
 	return user, exist
 }
 
