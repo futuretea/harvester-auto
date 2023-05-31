@@ -1,3 +1,5 @@
 ubuntu_image_url = "http://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64.img"
 
 ubuntu_mirror_url = "http://us.archive.ubuntu.com/ubuntu/"
+
+ubuntu_password = "password"

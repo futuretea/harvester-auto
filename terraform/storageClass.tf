@@ -1,10 +1,6 @@
-resource "kubernetes_storage_class" "replicas-1" {
-  metadata {
-    name = "replicas-1"
-  }
-  storage_provisioner = "driver.longhorn.io"
-  reclaim_policy      = "Delete"
-  volume_binding_mode = "Immediate"
+resource "harvester_storageclass" "any-replicas-1" {
+  name = "any-replicas-1"
+
   parameters = {
     "migratable"          = "true"
     "numberOfReplicas"    = "1"
