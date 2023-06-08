@@ -914,11 +914,27 @@ func main() {
 			user, _ := getUserByUserName(userName)
 			namespaceID := user.NamespaceID
 			uiPRs := request.StringParam("uiPRs", "0")
-			bashCommand := fmt.Sprintf("./pr2ui.sh %d %s", namespaceID, uiPRs)
+			bashCommand := fmt.Sprintf("./pr2ui.sh %d %s false", namespaceID, uiPRs)
 			util.Shell2Reply(botCtx, response, bashCommand)
 		},
 	}
 	bot.Command("pr2ui {uiPRs}", pr2uiDefinition)
+
+	// command pr2uiRancher
+	pr2uiRancherDefinition := &slacker.CommandDefinition{
+		Description:       "Build Rancher Dashboard",
+		Examples:          []string{"pr2uiRancher 0"},
+		AuthorizationFunc: authorizationFunc,
+		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
+			userName := botCtx.Event().UserName
+			user, _ := getUserByUserName(userName)
+			namespaceID := user.NamespaceID
+			uiPRs := request.StringParam("uiPRs", "0")
+			bashCommand := fmt.Sprintf("./pr2ui.sh %d %s true", namespaceID, uiPRs)
+			util.Shell2Reply(botCtx, response, bashCommand)
+		},
+	}
+	bot.Command("pr2uiRancher {uiPRs}", pr2uiRancherDefinition)
 
 	// bot run
 	c, cancel := context.WithCancel(context.Background())

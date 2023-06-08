@@ -5,7 +5,7 @@ set -eou pipefail
 usage() {
   cat <<HELP
 USAGE:
-    pr2ui.sh namespace_id ui_prs
+    pr2ui.sh namespace_id ui_prs is_rancher
 HELP
 }
 
@@ -16,6 +16,7 @@ fi
 
 namespace_id=$1
 ui_prs=$2
+is_rancher=$3
 
 source _config.sh
 log_file="${logs_dir}/${namespace_id}-ui.log"
@@ -27,7 +28,7 @@ if [[ -f ${pid_file} ]]; then
 fi
 
 mkdir -p "${logs_dir}"
-nohup ./_pr2ui.sh "${namespace_id}" "${ui_prs}" >"${log_file}" 2>&1 &
-echo "$! pr2ui ${ui_prs}" >"${pid_file}"
+nohup ./_pr2ui.sh "${namespace_id}" "${ui_prs}" "${is_rancher}">"${log_file}" 2>&1 &
+echo "$! pr2ui ${ui_prs} ${is_rancher}" >"${pid_file}"
 
 echo "got"
