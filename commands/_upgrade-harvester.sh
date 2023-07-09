@@ -31,15 +31,17 @@ mkdir -p "${workspace}/upgrade"
 cd "${workspace}/upgrade"
 
 # patch system-upgrade-controller
+patch_timeout=3600
 cat > upgrade-fix.yaml <<EOF
 spec:
   values:
-    systemUpgradeJobActiveDeadlineSeconds: "3600"
+    systemUpgradeJobActiveDeadlineSeconds: "${patch_timeout}"
 EOF
 
 kubectl --kubeconfig="${kubeconfig_file}" -n fleet-local patch managedcharts.management.cattle.io local-managed-system-upgrade-controller --patch-file=upgrade-fix.yaml --type merge
 kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system rollout restart deploy/system-upgrade-controller
 kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system wait --for=condition=Available deploy system-upgrade-controller
+kubectl --kubeconfig="${kubeconfig_file}" -n cattle-system wait --for=jsonpath='{.data.SYSTEM_UPGRADE_JOB_ACTIVE_DEADLINE_SECONDS}'="${patch_timeout}" cm system-upgrade-controller-config
 
 # patch server-version
 server_version=$(kubectl --kubeconfig="${kubeconfig_file}" get setting server-version -o jsonpath='{.value}')
@@ -86,6 +88,7 @@ metadata:
   namespace: harvester-system
 spec:
   version: ${upgrade_to_version}
+  logEnabled: false
 EOF
 kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system delete upgrades.harvesterhci.io --all
 kubectl --kubeconfig="${kubeconfig_file}" apply -f upgrade.yaml
