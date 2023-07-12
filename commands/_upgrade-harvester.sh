@@ -52,11 +52,10 @@ EOF
   kubectl --kubeconfig="${kubeconfig_file}" patch setting server-version --patch-file=server-version.yaml --type merge
 fi
 
-# download iso from url
-iso_local_file="harvester-${harvester_version}-amd64.iso"
-rm -rf "${iso_local_file}"
-wget -q "${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
-iso_check_sum=$(sha512sum "${iso_local_file}" | awk '{print $1}')
+# get iso sha512sum from url
+iso_file_url="${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso"
+sha512_file_url="${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.sha512"
+iso_check_sum=$(curl -s "${sha512_file_url}" | head -n 1 | awk '{print $1}')
 release_date=$(date +"%Y%m%d")
 
 # create version from iso
@@ -73,31 +72,16 @@ metadata:
   namespace: harvester-system
 spec:
   isoChecksum: "${iso_check_sum}"
-  isoURL: ${harvester_url}/${harvester_version}/harvester-${harvester_version}-amd64.iso
+  isoURL: "${iso_file_url}"
   releaseDate: "${release_date}"
 EOF
 
 kubectl --kubeconfig="${kubeconfig_file}" apply -f version.yaml
 
-# create upgrade from version
-cat > upgrade.yaml <<EOF
-apiVersion: harvesterhci.io/v1beta1
-kind: Upgrade
-metadata:
-  name: hvst-upgrade-auto
-  namespace: harvester-system
-spec:
-  version: ${upgrade_to_version}
-  logEnabled: false
-EOF
+# clean existing upgrade
 kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system delete upgrades.harvesterhci.io --all
-kubectl --kubeconfig="${kubeconfig_file}" apply -f upgrade.yaml
-
-# wait upgrade
-kubectl --kubeconfig="${kubeconfig_file}" -n harvester-system wait --for=condition=Completed Upgrade hvst-upgrade-auto --timeout=180m
-echo "Completed"
 
 if [ -n "${slack_webhook_url}" ]; then
-  text="upgrade cluster ${cluster_id} in namespace ${namespace_id} started"
+  text="upgrade version ${upgrade_to_version} for cluster ${cluster_id} in namespace ${namespace_id} added"
   curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${text}"'"}' "${slack_webhook_url}"
 fi
