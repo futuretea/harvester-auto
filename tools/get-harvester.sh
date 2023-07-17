@@ -22,6 +22,7 @@ mkdir -p "$ROOTDIR/$VERSION"
 cd "$ROOTDIR/$VERSION"
 
 wget "${BASEURL}/${VERSION}/harvester-${VERSION}-amd64.iso"
+wget "${BASEURL}/${VERSION}/harvester-${VERSION}-amd64.sha512"
 wget "${BASEURL}/${VERSION}/harvester-${VERSION}-vmlinuz-amd64"
 wget "${BASEURL}/${VERSION}/harvester-${VERSION}-initrd-amd64"
 wget "${BASEURL}/${VERSION}/harvester-${VERSION}-rootfs-amd64.squashfs"
